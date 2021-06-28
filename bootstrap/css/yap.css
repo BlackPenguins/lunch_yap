@@ -1,0 +1,149 @@
+.list-group .list-group-item:nth-child(odd) {
+    background-color: #aacdff;
+}
+
+.list-group .list-group-item:nth-child(even) {
+    background-color: #78c6ff;
+}
+
+.list-category {
+    background-color: #385975;
+    color: #f0f0f0;
+    font-weight: bold;
+}
+
+.info-section {
+    /*position: absolute;*/
+    /*top: 0px;*/
+    height: 200px;
+    background-color: rgba(195, 8, 14, 0.44);
+    font-weight: bold;
+    font-family: Helvetica, Sans-Serif;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/*.map-section {*/
+    /*height: 100%;*/
+    /*!*background-color: #00b336;*!*/
+     /*!*position: absolute;*!*/
+    /*!*top: 300px;*!*/
+    /*!*bottom: 0px;*!*/
+
+    /*display: inline-block;*/
+    /*width: 75%;*/
+    /*vertical-align: top;*/
+    /*border: 1px solid #000;*/
+    /*height: 366px;*/
+
+/*}*/
+
+.location-section {
+    float: left;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100%;
+    width: 24%;
+    vertical-align: top;
+    display: inline-block;
+    background-color: #4d544e;
+    border: 0px solid #000;
+}
+
+/*.content-section {*/
+    /*!*float: left;*!*/
+    /*height: 100%;*/
+/*}*/
+
+.content-section {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+.content-section .info-section {
+  flex: 0 1 400px;
+  /* The above is shorthand for:
+  flex-grow: 0,
+  flex-shrink: 1,
+  flex-basis: auto
+  */
+}
+
+.content-section .map-section {
+  flex: 1 1 auto;
+    height: 100%;
+    border: 1px solid #000000;
+}
+
+::-webkit-scrollbar {
+    width: 7.5px;
+    position: fixed;
+    height: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #b8b8b8;
+    border-radius: 10px;
+}
+
+.header-section {
+    position: absolute;
+    top: 0;
+    height: 50px;
+    width: 100%;
+    border-bottom: 3px solid #000;
+    background-color: #3276b1;
+    color: #f0f0f0;
+}
+
+.main-section {
+    flex: 1 1 auto;
+    height: 100%;
+    margin-top: 50px;
+    overflow-y: hidden;
+}
+
+.logo {
+    height: 33px;
+    margin-left: 10px;
+    margin-top: 5px;
+}
+
+.tagline {
+    font-size: 0.9em;
+    font-style: italic;
+    font-weight: bold;
+    margin-left: 15px;
+    vertical-align: sub;
+}
+
+.filter-button {
+    margin: 5px 10px;
+    cursor: pointer;
+}
+
+.filter-button.disabled {
+    opacity: 0.65;
+}
+
+.filter-button.enabled {
+    opacity: 1;
+    border: solid 2px #e6e53b;
+}
+
+.filter-container input {
+    display: none;
+}
+
+.filter-container {
+    float: right;
+    margin-left: 60px;
+}
+
+body {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
