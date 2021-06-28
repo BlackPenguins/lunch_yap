@@ -89,14 +89,37 @@
     include_once "dao/CategoryDAO.php";
     include_once "dao/LocationDAO.php";
 
+    $isAdmin = isset( $_SESSION['LoggedIn'] ) && $_SESSION['LoggedIn'] && isset( $_SESSION['IsAdmin'] ) && $_SESSION['IsAdmin'];
 
-    $categoriesDropdown = "<select id= 'category' name='category_id'>";
-    foreach (CategoryDAO::getAll() as $categoryRow ) {
-        $categoryID = $categoryRow->CategoryID;
-        $name = $categoryRow->Name;
-        $categoriesDropdown .= "<option value='$categoryID'>$name</option>";
+    if( $isAdmin ) {
+        // HANDLE SPECIAL DB FUNCTIONS
+        if (isset($_GET['specialAction'])) {
+            $specialAction = $_GET['specialAction'];
+            echo "<h1>Executing Special Action '${specialAction}'</h1>";
+
+            switch ($specialAction) {
+                case 'create_tables':
+                    Database::__createTables();
+                    break;
+                case 'insert_sample':
+                    Database::__insertSampleData();
+                    break;
+                default:
+                    echo "<h3>Unknown action.</h3>";
+            }
+
+            echo "<h3>Done</h3>";
+            die();
+        }
+
+        $categoriesDropdown = "<select id= 'category' name='category_id'>";
+        foreach (CategoryDAO::getAll() as $categoryRow ) {
+            $categoryID = $categoryRow->CategoryID;
+            $name = $categoryRow->Name;
+            $categoriesDropdown .= "<option value='$categoryID'>$name</option>";
+        }
+        $categoriesDropdown .= "</select>";
     }
-    $categoriesDropdown .= "</select>";
 
 ?>
 
@@ -245,8 +268,6 @@
     // Reviews, Frequency
     // api.php for slack
 
-    $isAdmin = isset( $_SESSION['LoggedIn'] ) && $_SESSION['LoggedIn'] && isset( $_SESSION['IsAdmin'] ) && $_SESSION['IsAdmin'];
-
     if( $isAdmin ) {
         // HANDLE THE ADD OR EDIT FORMS
         if( isset( $_GET['category'] ) ) {
@@ -293,114 +314,93 @@
 
         }
 
-        // HANDLE SPECIAL DB FUNCTIONS
-        if( isset( $_GET['specialAction'] ) ) {
-            $specialAction = $_GET['specialAction'];
-            echo "<h1>Executing Special Action '${specialAction}'</h1>";
-
-            switch( $specialAction ) {
-                case 'create_tables':
-                    Database::__createTables();
-                    break;
-                case 'insert_sample':
-                    Database::__insertSampleData();
-                    break;
-                default:
-                    echo "<h3>Unknown action.</h3>";
-            }
-
-            echo "<h3>Done</h3>";
 
         // DRAW THE PAGE
-        } else {
 
-            echo "<div style='display: flex; justify-content: flex-end; margin-top: 15px;'>";
-            echo "<button style='margin: 0px 5px;' type='button' class='add_category btn btn-primary' data-bs-toggle='modal' data-bs-target='#modal_category'>Add Category</button></td>";
-            echo "<button style='margin: 0px 5px;' type='button' class='add_location btn btn-primary' data-bs-toggle='modal' data-bs-target='#modal_location'>Add Location</button></td>";
-            echo "</div>";
+        echo "<div style='display: flex; justify-content: flex-end; margin-top: 15px;'>";
+        echo "<button style='margin: 0px 5px;' type='button' class='add_category btn btn-primary' data-bs-toggle='modal' data-bs-target='#modal_category'>Add Category</button></td>";
+        echo "<button style='margin: 0px 5px;' type='button' class='add_location btn btn-primary' data-bs-toggle='modal' data-bs-target='#modal_location'>Add Location</button></td>";
+        echo "</div>";
 
-            echo "<h1>Locations</h1>";
-            echo "<div style='margin: 30px; border: 1px solid #000;' >";
-            echo "<table class='table table-striped table-hover'>";
-            echo "<thead>";
-            echo "<tr>";
-            echo "<th>Name</th>";
-            echo "<th>Category</th>";
-            echo "<th>Distance</th>";
-            echo "<th>Abbreviation</th>";
-            echo "<th>Latitude</th>";
-            echo "<th>Longitude</th>";
-            echo "<th>Menu</th>";
-            echo "<th>Frequency</th>";
-            echo "<th>Vegan</th>";
-            echo "<th>Vegetarian</th>";
-            echo "<th>Gluten-Free</th>";
-            echo "<th>Lactose-Free</th>";
-            echo "<th>Takeout</th>";
-            echo "<th>&nbsp</th>";
+        echo "<h1>Locations</h1>";
+        echo "<div style='margin: 30px; border: 1px solid #000;' >";
+        echo "<table class='table table-striped table-hover'>";
+        echo "<thead>";
+        echo "<tr>";
+        echo "<th>Name</th>";
+        echo "<th>Category</th>";
+        echo "<th>Distance</th>";
+        echo "<th>Abbreviation</th>";
+        echo "<th>Latitude</th>";
+        echo "<th>Longitude</th>";
+        echo "<th>Menu</th>";
+        echo "<th>Frequency</th>";
+        echo "<th>Vegan</th>";
+        echo "<th>Vegetarian</th>";
+        echo "<th>Gluten-Free</th>";
+        echo "<th>Lactose-Free</th>";
+        echo "<th>Takeout</th>";
+        echo "<th>&nbsp</th>";
+        echo "</tr>";
+        echo "</thead>";
+
+        echo "<tbody>";
+        foreach (LocationDAO::getAll() as $locationRow ) {
+            $locationID = $locationRow->LocationID;
+            $categoryID = $locationRow->CategoryID;
+
+            drawTextCell( $locationID, "location_name", $locationRow->Name );
+            drawTextCell( $locationID, "location_category", $locationRow->CategoryName );
+            drawTextCell( $locationID, "location_distance", $locationRow->Distance );
+            drawTextCell( $locationID, "location_abbreviation", $locationRow->Abbreviation );
+            drawTextCell( $locationID, "location_latitude", $locationRow->Latitude );
+            drawTextCell( $locationID, "location_longitude", $locationRow->Longitude );
+            drawTextCell( $locationID, "location_menu", $locationRow->MenuFileName );
+            drawTextCell( $locationID, "location_frequency", $locationRow->Frequency );
+            drawBoolCell( $locationID, "location_has_vegan", $locationRow->HasVegan );
+            drawBoolCell( $locationID, "location_has_vegetarian", $locationRow->HasVegetarian );
+            drawBoolCell( $locationID, "location_has_gluten_free", $locationRow->HasGlutenFree );
+            drawBoolCell( $locationID, "location_has_lactose_free", $locationRow->HasLactoseFree );
+            drawBoolCell( $locationID, "location_has_takeout", $locationRow->HasTakeout );
+
+            $description = $locationRow->Description;
+            $punchline = $locationRow->Punchline;
+
+            echo "<td><button data-categoryid='$categoryID' data-description='$description' data-punchline='$punchline' data-id='$locationID' type='button' class='edit_location btn btn-sm btn-info' data-bs-toggle='modal' data-bs-target='#modal_location'>Edit</button></td>";
             echo "</tr>";
-            echo "</thead>";
-
-            echo "<tbody>";
-            foreach (LocationDAO::getAll() as $locationRow ) {
-                $locationID = $locationRow->LocationID;
-                $categoryID = $locationRow->CategoryID;
-
-                drawTextCell( $locationID, "location_name", $locationRow->Name );
-                drawTextCell( $locationID, "location_category", $locationRow->CategoryName );
-                drawTextCell( $locationID, "location_distance", $locationRow->Distance );
-                drawTextCell( $locationID, "location_abbreviation", $locationRow->Abbreviation );
-                drawTextCell( $locationID, "location_latitude", $locationRow->Latitude );
-                drawTextCell( $locationID, "location_longitude", $locationRow->Longitude );
-                drawTextCell( $locationID, "location_menu", $locationRow->MenuFileName );
-                drawTextCell( $locationID, "location_frequency", $locationRow->Frequency );
-                drawBoolCell( $locationID, "location_has_vegan", $locationRow->HasVegan );
-                drawBoolCell( $locationID, "location_has_vegetarian", $locationRow->HasVegetarian );
-                drawBoolCell( $locationID, "location_has_gluten_free", $locationRow->HasGlutenFree );
-                drawBoolCell( $locationID, "location_has_lactose_free", $locationRow->HasLactoseFree );
-                drawBoolCell( $locationID, "location_has_takeout", $locationRow->HasTakeout );
-
-                $description = $locationRow->Description;
-                $punchline = $locationRow->Punchline;
-
-                echo "<td><button data-categoryid='$categoryID' data-description='$description' data-punchline='$punchline' data-id='$locationID' type='button' class='edit_location btn btn-sm btn-info' data-bs-toggle='modal' data-bs-target='#modal_location'>Edit</button></td>";
-                echo "</tr>";
-            }
-            echo "</tbody>";
-
-            echo "</table>";
-            echo "</div>";
-
-
-            echo "<h1>Categories</h1>";
-            echo "<div style='margin: 30px; border: 1px solid #000;' >";
-            echo "<table class='table table-striped table-hover'>";
-            echo "<thead>";
-            echo "<tr>";
-            echo "<th>Name</th>";
-            echo "<th>Position</th>";
-            echo "<th>&nbsp</th>";
-            echo "</tr>";
-            echo "</thead>";
-
-            echo "<tbody>";
-            foreach (CategoryDAO::getAll() as $categoryRow ) {
-                $categoryID = $categoryRow->CategoryID;
-                $name = $categoryRow->Name;
-                $position = $categoryRow->Position;
-                echo "<tr>";
-                echo "<td id='category_name_$categoryID' >$name</td>";
-                echo "<td id='category_position_$categoryID' >$position</td>";
-                echo "<td><button data-id='$categoryID' type='button' class='edit_category btn btn-sm btn-info' data-bs-toggle='modal' data-bs-target='#modal_category'>Edit</button></td>";
-                echo "</tr>";
-            }
-            echo "</tbody>";
-
-            echo "</table>";
-            echo "</div>";
-
-
         }
+        echo "</tbody>";
+
+        echo "</table>";
+        echo "</div>";
+
+
+        echo "<h1>Categories</h1>";
+        echo "<div style='margin: 30px; border: 1px solid #000;' >";
+        echo "<table class='table table-striped table-hover'>";
+        echo "<thead>";
+        echo "<tr>";
+        echo "<th>Name</th>";
+        echo "<th>Position</th>";
+        echo "<th>&nbsp</th>";
+        echo "</tr>";
+        echo "</thead>";
+
+        echo "<tbody>";
+        foreach (CategoryDAO::getAll() as $categoryRow ) {
+            $categoryID = $categoryRow->CategoryID;
+            $name = $categoryRow->Name;
+            $position = $categoryRow->Position;
+            echo "<tr>";
+            echo "<td id='category_name_$categoryID' >$name</td>";
+            echo "<td id='category_position_$categoryID' >$position</td>";
+            echo "<td><button data-id='$categoryID' type='button' class='edit_category btn btn-sm btn-info' data-bs-toggle='modal' data-bs-target='#modal_category'>Edit</button></td>";
+            echo "</tr>";
+        }
+        echo "</tbody>";
+
+        echo "</table>";
+        echo "</div>";
     } else {
         // Not admin, redirect them home
         header( "Location: yap.php" );

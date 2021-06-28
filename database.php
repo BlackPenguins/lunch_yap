@@ -9,6 +9,10 @@ class Database {
     // https://websitebeaver.com/php-pdo-vs-mysqli
     // https://dev.mysql.com/doc/mysql-getting-started/en/#mysql-getting-started-connecting
 
+    // Centos:
+    // create db: "mysqladmin -u root -p create lunch_yap"
+    // start client with "mysql lunch_yap"
+
     // create database bookmark_feed;
     // show databases;
     // create user 'USER'@'localhost' IDENTIFIED BY 'PASS';
