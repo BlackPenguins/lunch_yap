@@ -88,6 +88,7 @@ EOSQL;
     }
 
     public static function __insertSampleData() {
+        // Test
         $classicID = CategoryDAO::create( "Classics", 1 );
         $mexicanID = CategoryDAO::create( "Mexican", 2 );
         $pizzaID = CategoryDAO::create( "Pizza", 3 );
