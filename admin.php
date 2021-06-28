@@ -1,4 +1,14 @@
-<?php session_start(); ?>
+<?php
+    session_start();
+
+    $isAdmin = isset( $_SESSION['LoggedIn'] ) && $_SESSION['LoggedIn'] && isset( $_SESSION['IsAdmin'] ) && $_SESSION['IsAdmin'];
+
+    if( !$isAdmin ) {
+        // Not admin, redirect them home
+        header( "Location: yap.php" );
+    }
+
+?>
 <head>
     <title>Yap! - Admin</title>
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -89,40 +99,33 @@
     include_once "dao/CategoryDAO.php";
     include_once "dao/LocationDAO.php";
 
-    $isAdmin = isset( $_SESSION['LoggedIn'] ) && $_SESSION['LoggedIn'] && isset( $_SESSION['IsAdmin'] ) && $_SESSION['IsAdmin'];
+    // HANDLE SPECIAL DB FUNCTIONS
+    if (isset($_GET['specialAction'])) {
+        $specialAction = $_GET['specialAction'];
+        echo "<h1>Executing Special Action '${specialAction}'</h1>";
 
-    if( $isAdmin ) {
-        // HANDLE SPECIAL DB FUNCTIONS
-        if (isset($_GET['specialAction'])) {
-            $specialAction = $_GET['specialAction'];
-            echo "<h1>Executing Special Action '${specialAction}'</h1>";
-
-            switch ($specialAction) {
-                case 'create_tables':
-                    Database::__createTables();
-                    break;
-                case 'insert_sample':
-                    Database::__insertSampleData();
-                    break;
-                default:
-                    echo "<h3>Unknown action.</h3>";
-            }
-
-            echo "<h3>Done</h3>";
-            die();
+        switch ($specialAction) {
+            case 'create_tables':
+                Database::__createTables();
+                break;
+            case 'insert_sample':
+                Database::__insertSampleData();
+                break;
+            default:
+                echo "<h3>Unknown action.</h3>";
         }
 
-        $categoriesDropdown = "<select id= 'category' name='category_id'>";
-        foreach (CategoryDAO::getAll() as $categoryRow ) {
-            $categoryID = $categoryRow->CategoryID;
-            $name = $categoryRow->Name;
-            $categoriesDropdown .= "<option value='$categoryID'>$name</option>";
-        }
-        $categoriesDropdown .= "</select>";
-    } else {
-        // Not admin, redirect them home
-        header( "Location: yap.php" );
+        echo "<h3>Done</h3>";
+        die();
     }
+
+    $categoriesDropdown = "<select id= 'category' name='category_id'>";
+    foreach (CategoryDAO::getAll() as $categoryRow ) {
+        $categoryID = $categoryRow->CategoryID;
+        $name = $categoryRow->Name;
+        $categoriesDropdown .= "<option value='$categoryID'>$name</option>";
+    }
+    $categoriesDropdown .= "</select>";
 
 ?>
 
