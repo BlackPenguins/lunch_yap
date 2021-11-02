@@ -1,53 +1,13 @@
 <?php
     session_start();
     include_once "database.php";
+    include_once "header.php";
     include_once "dao/CategoryDAO.php";
+    include_once "dao/DistanceDAO.php";
     include_once "dao/LocationDAO.php";
+
+    buildHeader( "Home" );
 ?>
-
-<head>
-    <title>Yap!</title>
-    <link rel="shortcut icon" type="image/jpg" href="images/yap_favicon_yellow.png"/>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="bootstrap/css/yap.css" rel="stylesheet">
-    <script src="bootstrap/js/bootstrap.min.js"></script>
-    <script src="bootstrap/js/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-</head>
-<body>
-
-    <div class='header-section'>
-        <img class='logo' src='images/yap_logo_yellow.png'/>
-        <span class='tagline'>One place to see all places to eat for lunch.</span>
-
-
-        <span class='filter-container'>
-
-            <input type='checkbox' id='VeganFilter'/>
-            <input type='checkbox' id='VegetarianFilter'/>
-            <input type='checkbox' id='NoGlutenFilter'/>
-            <input type='checkbox' id='NoLactoseFilter'/>
-            <input type='checkbox' id='TakeoutFilter'/>
-
-            <img class='filter-button disabled' title='Supports Vegan' id='vegan_button' src='images/vegan_button.png'/>
-            <img class='filter-button disabled' title='Supports Vegetarian' id='vegetarian_button' src='images/vegetarian_button.png'/>
-            <img class='filter-button disabled' title='Supports Gluten-Free' id='gluten_free_button' src='images/gluten_free_button.png'/>
-            <img class='filter-button disabled' title='Supports Lactose-Free' id='lactose_free_button' src='images/lactose_free_button.png'/>
-            <img class='filter-button disabled' title='Supports Takeout' id='takeout_button' src='images/takeout_button.png'/>
-        </span>
-
-        <span class='filter-container'>
-            <input type='checkbox' id='WalkFilter'/>
-            <input type='checkbox' id='ShortFilter'/>
-            <input type='checkbox' id='LongFilter'/>
-
-            <img class='filter-button disabled' title='Walking Distance' id='walk_button' src='images/walk_button.png'/>
-            <img class='filter-button disabled' title='Short Drive Distance' id='short_button' src='images/car_button.png'/>
-            <img class='filter-button disabled' title='Long Drive Distance' id='long_button' src='images/bus_button.png'/>
-        </span>
-
-    </div>
     <div class='main-section'>
         <!-- SIDEBAR-->
         <div class="location-section">
@@ -55,99 +15,90 @@
             <div class="scrollarea d-flex flex-column align-items-stretch flex-shrink-0 bg-white">
 
                 <?php
-                    $benchMarkers = "";
+                    $locationMarkers = "";
 
                     foreach (CategoryDAO::getAll() as $categoryRow ) {
                         $categoryName = $categoryRow->Name;
                         $categoryID = $categoryRow->CategoryID;
+                        $categoryIconFileName = $categoryRow->IconFileName;
 
-                        echo "<a href='/' class='list-category d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom'>";
+                        echo "<span class='list-category d-flex align-items-center flex-shrink-0 p-3 text-decoration-none border-bottom'>";
 
-                        switch( $categoryName ) {
-                            case "Classics":
-                                echo "&#11088;&nbsp;";
-                                break;
-
-                            case "Mexican":
-                                echo "&#127790;&nbsp;";
-                                break;
-
-                            case "Pizza":
-                                echo "&#127829;&nbsp;";
-                                break;
-
-                            case "Sandwiches":
-                                echo "&#129386;&nbsp;";
-                                break;
-
-                            case "Diners":
-                                echo "&#129371;&nbsp;";
-                                break;
-
-                            case "Fast Food":
-                                echo "&#127839;&nbsp;";
-                                break;
-
-                            case "Random":
-                                echo "&#127922;&nbsp;";
-                                break;
-
-                            case "Sit Down":
-                                echo "&#129681;&nbsp;";
-                                break;
-
-                            case "RSA":
-                                echo "&#127970;&nbsp;";
-                                break;
-
-                            case "Permanently Closed":
-                                echo "&#9760;&#65039;&nbsp;";
-                                break;
-
+                        if( $categoryIconFileName != "" ) {
+                            echo "<img style='margin-right: 10px;' src='images/category_icons/$categoryIconFileName'/>";
                         }
+
                         echo "<span class='fs-5 fw-semibold'>$categoryName</span>";
-                        echo "</a>";
+                        echo "</span>";
 
                         echo "<div class='list-group list-group-flush border-bottom scrollarea'>";
 
                         foreach (LocationDAO::getWithCategoryID( $categoryID ) as $locationRow ) {
                             $name = $locationRow->Name;
+                            $locationID = $locationRow->LocationID;
                             $punchline = $locationRow->Punchline;
-                            $distance = $locationRow->Distance;
+                            $distance = $locationRow->DistanceName;
                             $abbreviation = $locationRow->Abbreviation;
                             $latitude = $locationRow->Latitude;
                             $longitude = $locationRow->Longitude;
+                            $deathDate = $locationRow->DeathDate;
 
                             $distanceClass = "distance_" . str_replace(" ", "", $distance );
-                            $dietaryClasses = "";
+                            $switchClasses = "";
+                            $switchSymbols = "";
 
                             if( $locationRow->HasVegan ) {
-                                $dietaryClasses .= " vegan";
+                                $switchClasses .= " vegan";
+                                $switchSymbols .= " <img src='images/symbols/vegan.png'/>";
                             }
 
                             if( $locationRow->HasVegetarian ) {
-                                $dietaryClasses .= " vegetarian";
+                                $switchClasses .= " vegetarian";
+                                $switchSymbols .= " <img src='images/symbols/vegetarian.png'/>";
                             }
 
                             if( $locationRow->HasGlutenFree ) {
-                                $dietaryClasses .= " glutenfree";
+                                $switchClasses .= " glutenfree";
+                                $switchSymbols .= " <img src='images/symbols/gluten_free.png'/>";
                             }
 
                             if( $locationRow->HasLactoseFree ) {
-                                $dietaryClasses .= " lactosefree";
+                                $switchClasses .= " lactosefree";
+                                $switchSymbols .= " <img src='images/symbols/lactose_free.png'/>";
                             }
 
                             if( $locationRow->HasTakeout ) {
-                                $dietaryClasses .= " takeout";
+                                $switchClasses .= " takeout";
+                                $switchSymbols .= " <img src='images/symbols/takeout.png'/>";
                             }
 
-                            echo "<a href='#' class='$distanceClass $dietaryClasses location list-group-item list-group-item-action py-3 lh-tight'>";
+                            if( $locationRow->HasWifi ) {
+                                $switchClasses .= " wifi";
+                                $switchSymbols .= " <img src='images/symbols/wifi.png'/>";
+                            }
+
+                            if( $locationRow->HasCashOnly ) {
+                                $switchClasses .= " cashonly";
+                                $switchSymbols .= " <img src='images/symbols/cash_only.png'/>";
+                            }
+
+                            echo "<span onclick='setLocationData($locationID)' class='$distanceClass $switchClasses location list-group-item  py-3 lh-tight'>";
                             echo "<div class='d-flex w-100 align-items-center justify-content-between'>";
                             echo "<strong class='mb-1'>$name</strong>";
                             echo "<small>$distance</small>";
                             echo "</div>";
                             echo "<div class='col-10 mb-1 small'>$punchline</div>";
-                            echo "</a>";
+                            if( $deathDate ) {
+                                $date = DateTime::createFromFormat('Y-m-d', $deathDate);
+                                $deathDateFormatted = $date->format( "m/d/Y" );
+                                echo "<div class=' list-death-date col-10 mb-1 small'>Date of Death: $deathDateFormatted</div>";
+                            }
+                            if( $switchSymbols ) {
+                                echo "<div id='list-switch-container'>";
+                                echo $switchSymbols;
+                                echo "</div>";
+                            }
+                            echo "</span>";
 
                             if ( $abbreviation != "" ) {
                                 $icon = "";
@@ -158,18 +109,42 @@
                                     $icon = ", label: '$abbreviation'";
                                 }
 
-                                $escapedName = str_replace("'", "\'", $name);
+                                $escapedName = str_replace("'", "&#39;", $name);
 
                                 if( $latitude == null ) {
-                                    $benchMarkers .= "console.error( 'Latitude for $escapedName is missing!');";
+                                    $locationMarkers .= "console.error( 'Latitude for $escapedName is missing!');";
                                 }
 
                                 if( $longitude == null ) {
-                                    $benchMarkers .= "console.error( 'Longitude for $escapedName is missing!');";
+                                    $locationMarkers .= "console.error( 'Longitude for $escapedName is missing!');";
                                 }
 
                                 if( $latitude != null && $longitude != null ) {
-                                    $benchMarkers .= "new google.maps.Marker({ position: {lat: $latitude, lng: $longitude}, map: map, title: '" . $escapedName . "' $icon});\n";
+                                    $locationMarkers .= <<<MARKER
+                                        {
+                                            const infoWindow = new google.maps.InfoWindow(
+                                                { 
+                                                    content: "<span style='font-weight: bold;'>$escapedName</span>"
+                                                }
+                                            );
+                                            
+                                            const marker = new google.maps.Marker(
+                                                { 
+                                                    position: {lat: $latitude, lng: $longitude},
+                                                    map: map,
+                                                    title: '$escapedName'
+                                                    $icon
+                                                }
+                                            );
+                                            marker.addListener( 'click', () => {
+                                                infoWindow.open( {
+                                                    anchor: marker,
+                                                    map: map,
+                                                    shouldFocus: false,
+                                                });
+                                            });
+                                        }
+MARKER;
                                 }
                             }
                         }
@@ -183,13 +158,67 @@
         </div>
 
         <div class="content-section">
-
             <div class='info-section'>
-                More information will be here when you click places on the left side. Just need to think what to put here.
-
-
-<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+                <div class="row row-no-gutter">
+                    <div class="details-column col-5">
+                        <div class='details-name-container'>
+                            <span id='details-name'></span>
+                            <span id='details-cost' style='float: right'></span>
+                        </div>
+                        <div>
+                            <span id='details-type' class='details-type'></span>
+                            <a id='details-menu' href='#'>MENU</a>
+                        </div>
+                        <div id='details-description' class='details-description'></div>
+                        <div class='details-switch-container'>
+                            <img id='details-wifi' src='images/symbols/wifi.png'/>
+                            <img id='details-cash-only' src='images/symbols/cash_only.png'/>
+                            <img id='details-vegan' src='images/symbols/vegan.png'/>
+                            <img id='details-vegetarian' src='images/symbols/vegetarian.png'/>
+                            <img id='details-gluten-free' src='images/symbols/gluten_free.png'/>
+                            <img id='details-lactose-free' src='images/symbols/lactose_free.png'/>
+                            <img id='details-takeout' src='images/symbols/takeout.png'/>
+                        </div>
+                    </div>
+                    <div class="details-column col-3">
+                        <div class='row row-no-gutter'>
+                            <div class="col-6">
+                                <span class='details-time-container'><span id='details-travel-time'>N/A</span></span>
+                                <div class='details-time-label'></div>
+                            </div>
+                            <div class="col-6">
+                                <span class='details-time-container'><span id='details-wait-time'>N/A</span></span>
+                                <div class='details-time-label'></div>
+                            </div>
+                        </div>
+                        <div id='details-types-container'>
+                            <div id='details-distance-container'>
+                                <span class='details-label'>Distance:</span>
+                                <span id='details-distance'></span>
+                            </div>
+                            <div id='details-quadrant-container'>
+                                <span class='details-label'>Quadrant:</span>
+                                <span id='details-quadrant'></span>
+                            </div>
+                            <div id='details-parking-container'>
+                                <span class='details-label'>Parking:</span>
+                                <span id='details-parking'></span>
+                            </div>
+                        </div>
+                        <div id='details-death-date-container'>
+                            Date of Death:
+<!--                            <img src='images/category_icons/grave.png'/>-->
+                            <span id='details-death-date' class='details-death-date'></span>
+                        </div>
+                        <span id='details-frequency' class='details-frequency'></span>
+                    </div>
+                    <div class="details-column col-4">
+                        <div class='details-review-container'>
+                            <div class='details-review-name'>NAME &bigstar; &bigstar; &bigstar;</div>
+                            <div class='details-review-data'>Likes, Dislikes</div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class='map-section'>
                 <div id="location-map" style='height: inherit;'></div>
@@ -200,17 +229,34 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1bot3pg5kYd2M8I9FmcK29kb7YsF5iBA"></script>
 
     <script>
+        var map = null;
+
         function initialize() {
-            var map = new google.maps.Map(document.getElementById('location-map'), {
+            map = new google.maps.Map(document.getElementById('location-map'), {
                 zoom: 17,
-                center: { lat: 43.155814, lng: -77.615362 }
+                center: { lat: 43.155814, lng: -77.615362 },
+                // Hide clutter on the map - points of interest, bus routes
+                styles: [
+                    {
+                        "featureType": "poi",
+                        "stylers": [
+                            { "visibility": "off" }
+                        ]
+                    },
+                    {
+                        "featureType": "transit.station.bus",
+                        "stylers": [
+                            { "visibility": "off" }
+                        ]
+                    },
+                ]
             });
 
             var rsa_logo = 'images/rsa_logo.png';
-            var shoretel_logo = 'images/shoretel_logo.png';
+            var mitel_logo = 'images/mitel_logo.png';
             var food_truck_logo = 'images/yellow_truck.png';
 
-            <?php echo $benchMarkers; ?>
+            <?php echo $locationMarkers; ?>
 
             new google.maps.Marker({
                 position: {lat: 43.155012, lng: -77.619447},
@@ -221,122 +267,10 @@
             new google.maps.Marker({
                 position: {lat: 43.1600687, lng: -77.6171080},
                 map: map,
-                icon: shoretel_logo
+                icon: mitel_logo
             });
-
         }
 
-        google.maps.event.addDomListener(window, 'load', initialize);
-
-
-        $( document ).ready( function() {
-            $('#vegan_button').click(function () {
-                $('#VeganFilter').click();
-                applyFilters();
-                toggleButton( $('#vegan_button') );
-            });
-
-            $('#vegetarian_button').click(function () {
-                $('#VegetarianFilter').click();
-                applyFilters();
-                toggleButton( $('#vegetarian_button') );
-            });
-
-            $('#gluten_free_button').click(function () {
-                $('#NoGlutenFilter').click();
-                applyFilters();
-                toggleButton( $('#gluten_free_button') );
-            });
-
-            $('#lactose_free_button').click(function () {
-                $('#NoLactoseFilter').click();
-                applyFilters();
-                toggleButton( $('#lactose_free_button') );
-            });
-
-            $('#takeout_button').click(function () {
-                $('#TakeoutFilter').click();
-                applyFilters();
-                toggleButton( $('#takeout_button') );
-            });
-
-            $('#walk_button').click(function () {
-                $('#WalkFilter').click();
-                applyFilters();
-                toggleButton( $('#walk_button') );
-            });
-
-            $('#short_button').click(function () {
-                $('#ShortFilter').click();
-                applyFilters();
-                toggleButton( $('#short_button') );
-            });
-
-            $('#long_button').click(function () {
-                $('#LongFilter').click();
-                applyFilters();
-                toggleButton( $('#long_button') );
-            });
-        });
-
-        function toggleButton( button ) {
-            if( button.hasClass( "enabled" ) ) {
-                button.addClass( "disabled" );
-                button.removeClass( "enabled" );
-            } else {
-                button.addClass( "enabled" );
-                button.removeClass( "disabled" );
-            }
-        }
-        function applyFilters() {
-            var isVegan = $('#VeganFilter').prop("checked");
-            var isVegetarian = $('#VegetarianFilter').prop("checked");
-            var isNoGluten = $('#NoGlutenFilter').prop("checked");
-            var isNoLactose = $('#NoLactoseFilter').prop("checked");
-            var isTakeout = $('#TakeoutFilter').prop("checked");
-
-            var isWalk = $('#WalkFilter').prop("checked");
-            var isShort = $('#ShortFilter').prop("checked");
-            var isLong = $('#LongFilter').prop("checked");
-
-            if(!isVegan && !isVegetarian && !isNoGluten && !isNoLactose && !isTakeout && !isWalk && !isShort && !isLong ) {
-                $('.location').show();
-            } else {
-                $('.location').hide();
-
-                if (isVegan) {
-                    $('.vegan').show();
-                }
-
-                if (isVegetarian) {
-                    $('.vegetarian').show();
-                }
-
-                if (isNoGluten) {
-                    $('.glutenfree').show();
-                }
-
-                if (isNoLactose) {
-                    $('.lactosefree').show();
-                }
-
-                if (isTakeout) {
-                    $('.takeout').show();
-                }
-
-                if (isWalk) {
-                    $('.distance_Walking').show();
-                }
-
-                if (isShort) {
-                    $('.distance_Short').show();
-                }
-
-                if (isLong) {
-                    $('.distance_Long').show();
-                }
-            }
-        }
-
+        initializeMap( map, initialize );
     </script>
 </body>

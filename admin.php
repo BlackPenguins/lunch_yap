@@ -1,102 +1,14 @@
 <?php
     session_start();
-
-    $isAdmin = isset( $_SESSION['LoggedIn'] ) && $_SESSION['LoggedIn'] && isset( $_SESSION['IsAdmin'] ) && $_SESSION['IsAdmin'];
-
-    if( !$isAdmin ) {
-        // Not admin, redirect them home
-        header( "Location: yap.php" );
-    }
-
+    include "header.php";
+    buildHeader( "Admin" );
 ?>
-<head>
-    <title>Yap! - Admin</title>
-    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <script src="bootstrap/js/bootstrap.min.js"></script>
-    <script src="bootstrap/js/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-
-    <script>
-        // On click of any of the edit buttons, copy the data from the table of that row into the modal
-        // and update the label in modal to say EDIT
-        $(document).on("click", ".edit_category", function () {
-            // The ID of the row is stored in data-id attribute
-            // This is getting the data-id from this (the button clicked)
-            var categoryID = $(this).data('id');
-
-            $( '#modal_category #staticBackdropLabel' ).text( "Edit Category" );
-            $( '#modal_category #action_button' ).text( "Edit" );
-
-            // Copy data into fields
-            $( '#modal_category #category_name' ).val( $('#category_name_' + categoryID ).text() );
-            $( '#modal_category #position' ).val( $('#category_position_' + categoryID ).text() );
-
-            // Tells the form to edit something, not add
-            $( '#modal_category #category_id' ).val( categoryID );
-        });
-
-        $(document).on("click", ".edit_location", function () {
-            // The ID of the row is stored in data-id attribute
-            // This is getting the data-id from this (the button clicked)
-            var locationID = $(this).data('id');
-            var categoryID = $(this).data('categoryid');
-            var description = $(this).data('description');
-            var punchline = $(this).data('punchline');
-
-            $( '#modal_location #staticBackdropLabel' ).text( "Edit Location" );
-            $( '#modal_location #action_button' ).text( "Edit" );
-
-            // Copy data into fields
-            $( '#modal_location #location_name' ).val( $('#location_name_' + locationID ).text() );
-            $( '#modal_location #category' ).val( categoryID );
-            $( '#modal_location #location_distance' ).val( $('#location_distance_' + locationID ).text() );
-            $( '#modal_location #location_description' ).val( description );
-            $( '#modal_location #location_punchline' ).val( punchline );
-            $( '#modal_location #location_abbreviation' ).val( $('#location_abbreviation_' + locationID ).text() );
-            $( '#modal_location #location_latitude' ).val( $('#location_latitude_' + locationID ).text() );
-            $( '#modal_location #location_longitude' ).val( $('#location_longitude_' + locationID ).text() );
-            $( '#modal_location #location_has_vegan' ).prop( 'checked', $('#location_has_vegan_' + locationID ).data( 'bool-value') == 1 );
-            $( '#modal_location #location_has_vegetarian' ).prop( 'checked', $('#location_has_vegetarian_' + locationID ).data( 'bool-value') == 1 );
-            $( '#modal_location #location_has_gluten_free' ).prop( 'checked', $('#location_has_gluten_free_' + locationID ).data( 'bool-value') == 1 );
-            $( '#modal_location #location_has_lactose_free' ).prop( 'checked', $('#location_has_lactose_free_' + locationID ).data( 'bool-value') == 1 );
-            $( '#modal_location #location_has_takeout' ).prop( 'checked', $('#location_has_takeout_' + locationID ).data( 'bool-value') == 1 );
-
-             // Tells the form to edit something, not add
-             $( '#modal_location #location_id' ).val( locationID );
-        });
-
-
-        // On click of any of the add buttons, clear the inputs of the modal and update the
-        // labels in modal to say ADD
-         $(document).on("click", ".add_category", function () {
-             $( '#modal_category #staticBackdropLabel' ).text( "Add Category" );
-             $( '#modal_category #action_button' ).text( "Add" );
-
-             // Clear fields
-             $( '#modal_category #category_name' ).val( "" );
-             $( '#modal_category #position' ).val( "" );
-
-             // Tells the form to add something, not edit
-             $( '#modal_category #category_id' ).val( "ADD" );
-        });
-
-         $(document).on("click", ".add_location", function () {
-             $( '#modal_location #staticBackdropLabel' ).text( "Add Location" );
-             $( '#modal_location #action_button' ).text( "Add" );
-
-             // Clear fields
-             $( '#modal_location #location_name' ).val( "" );
-
-             // Tells the form to add something, not edit
-             $( '#modal_location #location_id' ).val( "ADD" );
-        });
-
-    </script>
 </head>
 
 <?php
     include_once "database.php";
     include_once "dao/CategoryDAO.php";
+    include_once "dao/DistanceDAO.php";
     include_once "dao/LocationDAO.php";
 
     // HANDLE SPECIAL DB FUNCTIONS
@@ -110,6 +22,9 @@
                 break;
             case 'insert_sample':
                 Database::__insertSampleData();
+                break;
+            case 'insert_0.2':
+                Database::__insert0_2();
                 break;
             default:
                 echo "<h3>Unknown action.</h3>";
@@ -126,6 +41,14 @@
         $categoriesDropdown .= "<option value='$categoryID'>$name</option>";
     }
     $categoriesDropdown .= "</select>";
+
+    $distanceDropdown = "<select id= 'distance' name='distance_id'>";
+    foreach (DistanceDAO::getAll() as $distanceRow ) {
+        $distanceID = $distanceRow->DistanceID;
+        $name = $distanceRow->Name;
+        $distanceDropdown .= "<option value='$distanceID'>$name</option>";
+    }
+    $distanceDropdown .= "</select>";
 
 ?>
 
@@ -146,6 +69,10 @@
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">Position</span>
                         <input type="number" id="position" name="position" class="form-control" aria-label="Position" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Icon File Name</span>
+                        <input type="text" id="iconFileName" name="iconFileName" class="form-control" aria-label="IconFileName" aria-describedby="basic-addon1">
                     </div>
 
                     <input type="hidden" id="category_id" name="category_id">
@@ -179,12 +106,14 @@
                     </div>
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">Distance</span>
-                        <select id="location_distance" name="location_distance">
-                            <option value='Very Short'>Very Short</option>
-                            <option value='Walking'>Walking</option>
-                            <option value='Short'>Short</option>
-                            <option value='Long'>Long</option>
-                            <option value='Very Long'>Very Long</option>
+                        <?php echo $distanceDropdown ?>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Cost</span>
+                        <select id='cost' name='cost'>
+                            <option value='1'>Cheap</option>
+                            <option value='2'>Average</option>
+                            <option value='3'>Expensive</option>
                         </select>
                     </div>
                     <div class="input-group mb-3">
@@ -198,6 +127,44 @@
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">Abbreviation</span>
                         <input type="text" maxlength='2' id="location_abbreviation" name="location_abbreviation" class="form-control" aria-describedby="basic-addon1">
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon1">Travel Time</span>
+                                <input type="number" id="location_travel_time" name="location_travel_time" class="form-control" aria-describedby="basic-addon1">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon1">Wait Time</span>
+                                <input type="number" id="location_wait_time" name="location_wait_time" class="form-control" aria-describedby="basic-addon1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Death Date</span>
+                        <input type="text" id="location_death_date" name="location_death_date" class="form-control" aria-describedby="basic-addon1">
+                    </div>
+
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Food Type</span>
+                        <input type="text" id="location_food_type" name="location_food_type" class="form-control" aria-describedby="basic-addon1">
+                    </div>
+
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Parking Type</span>
+                        <input type="text" id="location_parking_type" name="location_parking_type" class="form-control" aria-describedby="basic-addon1">
+                    </div>
+
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Quadrant</span>
+                        <input type="text" id="location_quadrant" name="location_quadrant" class="form-control" aria-describedby="basic-addon1">
                     </div>
 
                     <div class="row">
@@ -221,28 +188,38 @@
                     </div>
 
                     <div class="form-check form-switch">
-                        <input class="form-check-input" id="location_has_vegan" name="location_has_vegan" type="checkbox" id="flexSwitchCheckChecked" checked>
+                        <input class="form-check-input" id="location_has_vegan" name="location_has_vegan" type="checkbox" id="flexSwitchCheckChecked">
                         <label class="form-check-label" for="flexSwitchCheckChecked">Vegan</label>
                     </div>
 
                     <div class="form-check form-switch">
-                        <input class="form-check-input" id="location_has_vegetarian" name="location_has_vegetarian" type="checkbox" id="flexSwitchCheckChecked" checked>
+                        <input class="form-check-input" id="location_has_vegetarian" name="location_has_vegetarian" type="checkbox" id="flexSwitchCheckChecked">
                         <label class="form-check-label" for="flexSwitchCheckChecked">Vegetarian</label>
                     </div>
 
                     <div class="form-check form-switch">
-                        <input class="form-check-input" id="location_has_gluten_free" name="location_has_gluten_free" type="checkbox" id="flexSwitchCheckChecked" checked>
+                        <input class="form-check-input" id="location_has_gluten_free" name="location_has_gluten_free" type="checkbox" id="flexSwitchCheckChecked">
                         <label class="form-check-label" for="flexSwitchCheckChecked">Gluten Free</label>
                     </div>
 
                     <div class="form-check form-switch">
-                        <input class="form-check-input" id="location_has_lactose_free" name="location_has_lactose_free" type="checkbox" id="flexSwitchCheckChecked" checked>
+                        <input class="form-check-input" id="location_has_lactose_free" name="location_has_lactose_free" type="checkbox" id="flexSwitchCheckChecked">
                         <label class="form-check-label" for="flexSwitchCheckChecked">Lactose Free</label>
                     </div>
 
                     <div class="form-check form-switch">
-                        <input class="form-check-input" id="location_has_takeout" name="location_has_takeout" type="checkbox" id="flexSwitchCheckChecked" checked>
+                        <input class="form-check-input" id="location_has_takeout" name="location_has_takeout" type="checkbox" id="flexSwitchCheckChecked">
                         <label class="form-check-label" for="flexSwitchCheckChecked">Takeout</label>
+                    </div>
+
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" id="location_has_wifi" name="location_has_wifi" type="checkbox" id="flexSwitchCheckChecked">
+                        <label class="form-check-label" for="flexSwitchCheckChecked">Wi-Fi</label>
+                    </div>
+
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" id="location_has_cash_only" name="location_has_cash_only" type="checkbox" id="flexSwitchCheckChecked">
+                        <label class="form-check-label" for="flexSwitchCheckChecked">Cash-Only</label>
                     </div>
 
                     <input type="hidden" id="location_id" name="location_id">
@@ -256,7 +233,11 @@
     </div>
 </div>
 
-<body style='margin: 20px;'>
+
+
+<body>
+
+<div style='margin: 50px 20px;'>
 
 <?php
     // ADDING NEW COLUMN GUIDE
@@ -266,34 +247,26 @@
     // 4) Add copy js to the modal
     // 5) Add the insert and update in the processor
 
-    // TODO MTM: Password in other files
-    // - Users from Sodastock migrated
-    // Login Modal
-    // Distance Table - so we can sort by distance
-    // What's hot?
-    // Reviews, Frequency
-    // api.php for slack
-    // Date place died, date picker
-
     // HANDLE THE ADD OR EDIT FORMS
     if( isset( $_GET['category'] ) ) {
         $locationID = $_POST['category_id'];
         $locationName = $_POST['category_name'];
         $position = $_POST['position'];
+        $iconFileName = $_POST['iconFileName'];
 
         if( $locationID == "ADD" ) {
-            CategoryDAO::create($locationName, $position);
+            CategoryDAO::create($locationName, $position, $iconFileName);
             echo "<h2>Category <b>$locationName</b> created.<h2>";
         } else {
-            CategoryDAO::update( $locationID, $locationName, $position );
+            CategoryDAO::update( $locationID, $locationName, $position, $iconFileName );
             echo "<h2>Category <b>$locationName</b> updated.<h2>";
         }
     } else if( isset( $_GET['location'] ) ) {
         $locationID = $_POST['location_id'];
         $locationName = $_POST['location_name'];
         $categoryID = $_POST['category_id'];
-
-        $distance = $_POST['location_distance'];
+        $distanceID = $_POST['distance_id'];
+        $cost = $_POST['cost'];
         $description = $_POST['location_description'];
         $punchline = $_POST['location_punchline'];
         $abbreviation = $_POST['location_abbreviation'];
@@ -305,16 +278,27 @@
         $hasLactoseFree = isset( $_POST['location_has_lactose_free'] );
         $hasTakeout = isset( $_POST['location_has_takeout'] );
 
+        $deathDate = $_POST['location_death_date'];
+        $foodType = $_POST['location_food_type'];
+        $travelTime = $_POST['location_travel_time'];
+        $hasWifi = isset( $_POST['location_has_wifi'] );
+        $hasCashOnly = isset( $_POST['location_has_cash_only'] );
+        $parkingType = $_POST['location_parking_type'];
+        $waitTime = $_POST['location_wait_time'];
+        $quadrant = $_POST['location_quadrant'];
+
         $clientMenuName = $_FILES['location_menu']['name'];
         if( $clientMenuName != "" ) {
             move_uploaded_file($_FILES['location_menu']['tmp_name'], "menus/$clientMenuName");
         }
 
         if( $locationID == "ADD" ) {
-            LocationDAO::create($locationName, $categoryID, $description, $punchline, $abbreviation, $distance, $latitude, $longitude, $clientMenuName, $hasVegan, $hasVegetarian, $hasGlutenFree, $hasLactoseFree, $hasTakeout); // update these
+            LocationDAO::create($locationName, $categoryID, $description, $punchline, $abbreviation, $distanceID, $cost, $latitude, $longitude, $clientMenuName,
+                $hasVegan, $hasVegetarian, $hasGlutenFree, $hasLactoseFree, $hasTakeout, $deathDate, $foodType, $travelTime, $hasWifi, $hasCashOnly, $parkingType, $waitTime, $quadrant); // update these
             echo "<h2>Location <b>$locationName</b> created.<h2>";
         } else {
-            LocationDAO::update( $locationID, $locationName, $categoryID, $description, $punchline, $abbreviation, $distance, $latitude, $longitude, $clientMenuName, $hasVegan, $hasVegetarian, $hasGlutenFree, $hasLactoseFree, $hasTakeout );
+            LocationDAO::update( $locationID, $locationName, $categoryID, $description, $punchline, $abbreviation, $distanceID, $cost, $latitude, $longitude, $clientMenuName,
+                $hasVegan, $hasVegetarian, $hasGlutenFree, $hasLactoseFree, $hasTakeout, $deathDate, $foodType, $travelTime, $hasWifi, $hasCashOnly, $parkingType, $waitTime, $quadrant );
             echo "<h2>Location <b>$locationName</b> updated.<h2>";
         }
 
@@ -346,6 +330,8 @@
     echo "<th>Gluten-Free</th>";
     echo "<th>Lactose-Free</th>";
     echo "<th>Takeout</th>";
+    echo "<th>Wifi</th>";
+    echo "<th>Cash-Only</th>";
     echo "<th>&nbsp</th>";
     echo "</tr>";
     echo "</thead>";
@@ -354,10 +340,12 @@
     foreach (LocationDAO::getAll() as $locationRow ) {
         $locationID = $locationRow->LocationID;
         $categoryID = $locationRow->CategoryID;
+        $distanceID = $locationRow->DistanceID;
+        $cost = $locationRow->Cost;
 
         drawTextCell( $locationID, "location_name", $locationRow->Name );
         drawTextCell( $locationID, "location_category", $locationRow->CategoryName );
-        drawTextCell( $locationID, "location_distance", $locationRow->Distance );
+        drawTextCell( $locationID, "location_distance", $locationRow->DistanceName );
         drawTextCell( $locationID, "location_abbreviation", $locationRow->Abbreviation );
         drawTextCell( $locationID, "location_latitude", $locationRow->Latitude );
         drawTextCell( $locationID, "location_longitude", $locationRow->Longitude );
@@ -368,11 +356,35 @@
         drawBoolCell( $locationID, "location_has_gluten_free", $locationRow->HasGlutenFree );
         drawBoolCell( $locationID, "location_has_lactose_free", $locationRow->HasLactoseFree );
         drawBoolCell( $locationID, "location_has_takeout", $locationRow->HasTakeout );
+        drawBoolCell( $locationID, "location_has_wifi", $locationRow->HasWifi );
+        drawBoolCell( $locationID, "location_has_cash_only", $locationRow->HasCashOnly );
 
         $description = $locationRow->Description;
         $punchline = $locationRow->Punchline;
+        $deathDate = $locationRow->DeathDate;
+        $foodType = $locationRow->FoodType;
+        $travelTime = $locationRow->TravelTime;
+        $waitTime = $locationRow->WaitTime;
+        $parkingType = $locationRow->ParkingType;
+        $quadrant = $locationRow->Quadrant;
 
-        echo "<td><button data-categoryid='$categoryID' data-description='$description' data-punchline='$punchline' data-id='$locationID' type='button' class='edit_location btn btn-sm btn-info' data-bs-toggle='modal' data-bs-target='#modal_location'>Edit</button></td>";
+        echo "<td><button ";
+        // These are not on the page, so we need to embed the data so its copied to the modal
+        echo "data-categoryid=\"$categoryID\" ";
+        echo "data-distanceid=\"$distanceID\" ";
+        echo "data-cost=\"$cost\" ";
+        echo "data-description=\"$description\" ";
+        echo "data-punchline=\"$punchline\" ";
+        echo "data-deathdate=\"$deathDate\" ";
+        echo "data-foodtype=\"$foodType\" ";
+        echo "data-traveltime=\"$travelTime\" ";
+        echo "data-waittime=\"$waitTime\" ";
+        echo "data-parkingtype=\"$parkingType\" ";
+        echo "data-quadrant=\"$quadrant\" ";
+        echo "data-id=\"$locationID\" ";
+
+        echo "type='button' ";
+        echo "class='edit_location btn btn-sm btn-info' data-bs-toggle='modal' data-bs-target='#modal_location'>Edit</button></td>";
         echo "</tr>";
     }
     echo "</tbody>";
@@ -388,6 +400,7 @@
     echo "<tr>";
     echo "<th>Name</th>";
     echo "<th>Position</th>";
+    echo "<th>Icon File Name</th>";
     echo "<th>&nbsp</th>";
     echo "</tr>";
     echo "</thead>";
@@ -397,9 +410,11 @@
         $categoryID = $categoryRow->CategoryID;
         $name = $categoryRow->Name;
         $position = $categoryRow->Position;
+        $iconFileName = $categoryRow->IconFileName;
         echo "<tr>";
         echo "<td id='category_name_$categoryID' >$name</td>";
         echo "<td id='category_position_$categoryID' >$position</td>";
+        echo "<td id='category_iconFileName_$categoryID' >$iconFileName</td>";
         echo "<td><button data-id='$categoryID' type='button' class='edit_category btn btn-sm btn-info' data-bs-toggle='modal' data-bs-target='#modal_category'>Edit</button></td>";
         echo "</tr>";
     }
@@ -423,9 +438,6 @@
 
         echo "</td>";
     }
-
-
-
 ?>
-
+</div>
 </body>

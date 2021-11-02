@@ -39,7 +39,7 @@ class Database {
     {
         $host = 'localhost';
         $dbname = 'lunch_yap';
-        $username = 'user';
+        $username = 'root';
         $password = 'pass';
 
         if( self::$globalPDO == null ) {
@@ -85,13 +85,89 @@ EOSQL;
                 HasLactoseFree       BOOLEAN,
                 HasTakeout       BOOLEAN,
                 CategoryID            INTEGER,
-                CONSTRAINT fk_category FOREIGN KEY (CategoryID) REFERENCES Category(CategoryID)
+                CONSTRAINT fk_categoryLocation FOREIGN KEY (CategoryID) REFERENCES Category(CategoryID)
+            );
+EOSQL;
+        Database::connect()->exec($sql);
+
+        $sql = <<<EOSQL
+           CREATE TABLE IF NOT EXISTS Distance (
+                DistanceID              INT AUTO_INCREMENT PRIMARY KEY,
+                Name       VARCHAR (30)        DEFAULT NULL,
+                IconFileName       VARCHAR (30)        DEFAULT NULL,
+                Position       INT
+            );
+EOSQL;
+        Database::connect()->exec($sql);
+
+        $sql = <<<EOSQL
+           CREATE TABLE IF NOT EXISTS Advice (
+                AdviceID              INT AUTO_INCREMENT PRIMARY KEY,
+                LocationID       INTEGER,
+                Name        VARCHAR (60)        DEFAULT NULL,
+                IsHot       BOOLEAN,
+                Advisor    VARCHAR (100),
+                CONSTRAINT fk_locationAdvice FOREIGN KEY (LocationID) REFERENCES Location(LocationID)
+            );
+EOSQL;
+        Database::connect()->exec($sql);
+
+        $sql = <<<EOSQL
+           CREATE TABLE IF NOT EXISTS Frequency (
+                LocationID       INTEGER,
+                DateVisited        DATE,
+                CONSTRAINT fk_locationFrequency FOREIGN KEY (LocationID) REFERENCES Location(LocationID)
             );
 EOSQL;
         Database::connect()->exec($sql);
     }
 
+    public static function __insert0_2() {
+        // TODO
+
+        Database::connect()->exec( "ALTER TABLE Location ADD COLUMN DistanceID INT");
+        Database::connect()->exec( "ALTER TABLE Location ADD CONSTRAINT fk_DistanceID FOREIGN KEY (DistanceID) REFERENCES Distance(DistanceID)");
+
+        Database::connect()->exec( "INSERT INTO Distance (Name, Position, IconFileName) VALUES ('Very Short', 1, null)");
+        Database::connect()->exec( "INSERT INTO Distance (Name, Position, IconFileName) VALUES ('Walking', 2, wwalking.pngng)");
+        Database::connect()->exec( "INSERT INTO Distance (Name, Position, IconFileName) VALUES ('Short Drive', 3, short_drive.pngve.png')");
+        Database::connect()->exec( "INSERT INTO Distance (Name, Position, IconFileName) VALUES ('Long Drive', 4, long_drive.pngve.png')");
+        Database::connect()->exec( "INSERT INTO Distance (Name, Position, IconFileName) VALUES ('Very Long', 5, null)");
+
+
+        Database::connect()->exec( "ALTER TABLE Category ADD COLUMN IconFileName VARCHAR(30)");
+
+        Database::connect()->exec( "ALTER TABLE Location ADD COLUMN DeathDate DATE");
+        Database::connect()->exec( "ALTER TABLE Location ADD COLUMN FoodType VARCHAR(50)");
+        Database::connect()->exec( "ALTER TABLE Location ADD COLUMN TravelTime INT DEFAULT 0");
+        Database::connect()->exec( "ALTER TABLE Location ADD COLUMN HasWifi BOOLEAN");
+        Database::connect()->exec( "ALTER TABLE Location ADD COLUMN HasCashOnly BOOLEAN");
+        Database::connect()->exec( "ALTER TABLE Location ADD COLUMN ParkingType VARCHAR(50)");
+        Database::connect()->exec( "ALTER TABLE Location ADD COLUMN WaitTime INT DEFAULT 0");
+        Database::connect()->exec( "ALTER TABLE Location ADD COLUMN Quadrant VARCHAR(50)");
+        Database::connect()->exec( "ALTER TABLE Location ADD COLUMN Cost INT DEFAULT 1");
+
+        Database::connect()->exec( "UPDATE Location SET DistanceID = 1 WHERE Distance = 'Very Short'");
+        Database::connect()->exec( "UPDATE Location SET DistanceID = 2 WHERE Distance = 'Walking'");
+        Database::connect()->exec( "UPDATE Location SET DistanceID = 3 WHERE Distance = 'Short'");
+        Database::connect()->exec( "UPDATE Location SET DistanceID = 4 WHERE Distance = 'Long'");
+        Database::connect()->exec( "UPDATE Location SET DistanceID = 5 WHERE Distance = 'Very Long'");
+
+        Database::connect()->exec( "UPDATE Category SET IconFileName = 'classics.png' WHERE Name = 'Classics'");
+        Database::connect()->exec( "UPDATE Category SET IconFileName = 'taco.png' WHERE Name = 'Mexican'");
+        Database::connect()->exec( "UPDATE Category SET IconFileName = 'pizza.png' WHERE Name = 'Pizza'");
+        Database::connect()->exec( "UPDATE Category SET IconFileName = 'sandwich.png' WHERE Name = 'Sandwiches'");
+        Database::connect()->exec( "UPDATE Category SET IconFileName = 'egg.png' WHERE Name = 'Diners'");
+        Database::connect()->exec( "UPDATE Category SET IconFileName = 'fries.png' WHERE Name = 'Fast Food'");
+        Database::connect()->exec( "UPDATE Category SET IconFileName = 'dice.png' WHERE Name = 'Random'");
+        Database::connect()->exec( "UPDATE Category SET IconFileName = 'dining.png' WHERE Name = 'Sit Down'");
+        Database::connect()->exec( "UPDATE Category SET IconFileName = 'rsa_logo.png' WHERE Name = 'RSA'");
+        Database::connect()->exec( "UPDATE Category SET IconFileName = 'grave.png' WHERE Name = 'Permanently Closed'");
+
+    }
     public static function __insertSampleData() {
+        return; // Safety
+
         // Test
         $classicID = CategoryDAO::create( "Classics", 1 );
         $mexicanID = CategoryDAO::create( "Mexican", 2 );
