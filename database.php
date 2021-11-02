@@ -1,5 +1,6 @@
 <?php
     ini_set('max_execution_time', 3600);
+    include "credentials.php";
 
 class Database {
     // DB SETUP
@@ -37,15 +38,13 @@ class Database {
 
     public static function connect()
     {
-        $host = 'localhost';
-        $dbname = 'lunch_yap';
-        $username = 'root';
-        $password = 'pass';
+        $host = Credentials::$host;
+        $dbname = Credentials::$dbname;
 
         if( self::$globalPDO == null ) {
             try {
 //                error_log("Connected to $dbname database at $host successfully.");
-                self::$globalPDO = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
+                self::$globalPDO = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", Credentials::$username, Credentials::$password );
 
                 // You wont get insert errors without this turned on, they'll just be warnings - which I ignore in PHP
                 self::$globalPDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -123,15 +122,17 @@ EOSQL;
     }
 
     public static function __insert0_2() {
-        // TODO
-
-        Database::connect()->exec( "ALTER TABLE Location ADD COLUMN DistanceID INT");
-        Database::connect()->exec( "ALTER TABLE Location ADD CONSTRAINT fk_DistanceID FOREIGN KEY (DistanceID) REFERENCES Distance(DistanceID)");
+        try {
+            Database::connect()->exec("ALTER TABLE Location ADD COLUMN DistanceID INT");
+            Database::connect()->exec("ALTER TABLE Location ADD CONSTRAINT fk_DistanceID FOREIGN KEY (DistanceID) REFERENCES Distance(DistanceID)");
+        } catch( Exception $e ) {
+            //fail quietly
+        }
 
         Database::connect()->exec( "INSERT INTO Distance (Name, Position, IconFileName) VALUES ('Very Short', 1, null)");
-        Database::connect()->exec( "INSERT INTO Distance (Name, Position, IconFileName) VALUES ('Walking', 2, wwalking.pngng)");
-        Database::connect()->exec( "INSERT INTO Distance (Name, Position, IconFileName) VALUES ('Short Drive', 3, short_drive.pngve.png')");
-        Database::connect()->exec( "INSERT INTO Distance (Name, Position, IconFileName) VALUES ('Long Drive', 4, long_drive.pngve.png')");
+        Database::connect()->exec( "INSERT INTO Distance (Name, Position, IconFileName) VALUES ('Walking', 2, 'walking.png')");
+        Database::connect()->exec( "INSERT INTO Distance (Name, Position, IconFileName) VALUES ('Short Drive', 3, 'short_drive.png')");
+        Database::connect()->exec( "INSERT INTO Distance (Name, Position, IconFileName) VALUES ('Long Drive', 4, 'long_drive.png')");
         Database::connect()->exec( "INSERT INTO Distance (Name, Position, IconFileName) VALUES ('Very Long', 5, null)");
 
 
