@@ -7,7 +7,10 @@
     $searchType = $_GET['search'];
 
     if( $searchType == "last_visit" ) {
+        $lunchSpots = array();
+
         foreach (LocationDAO::getAllByLastVisit( $quadrant ) as $locationRow ) {
+            $lunchDetails = array();
             $name = $locationRow->Name;
             $locationID = $locationRow->LocationID;
             $punchline = $locationRow->Punchline;
@@ -19,7 +22,11 @@
 
             $frequencyFormatted = FrequencyDAO::formattedForUI( $locationRow->FrequencyCount, $locationRow->FrequencyLatest);
 
-            echo "$name - $frequencyFormatted<br>";
+            $lunchDetails['name'] = $name;
+            $lunchDetails['latest'] = $frequencyFormatted;
+            $lunchSpots[] = $lunchDetails;
         }
+
+        echo json_encode( $lunchSpots );
     }
 ?>
