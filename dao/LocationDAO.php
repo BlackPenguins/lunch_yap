@@ -14,7 +14,8 @@ class LocationDAO {
     public $Latitude;
     public $Longitude;
     public $MenuFileName;
-    public $Frequency;
+    public $FrequencyLatest;
+    public $FrequencyCount;
     public $HasVegan;
     public $HasVegetarian;
     public $HasGlutenFree;
@@ -119,14 +120,14 @@ class LocationDAO {
     }
 
     public static function getAll() {
-        $statement = Database::connect()->prepare( LocationDAO::getSelectString() );
+        $statement = Database::connect()->prepare( LocationDAO::getSelectString( false ) );
         $statement->execute();
         $results = $statement->fetchAll(PDO::FETCH_CLASS, LocationDAO::class);
         return $results;
     }
 
     public static function getWithCategoryID( $categoryID ) {
-        $statement = Database::connect()->prepare( LocationDAO::getSelectString() . " WHERE l.CategoryID = :categoryID" );
+        $statement = Database::connect()->prepare( LocationDAO::getSelectString( false ) . " WHERE l.CategoryID = :categoryID" );
         $statement->bindValue( ":categoryID", $categoryID);
         $statement->execute();
         $results = $statement->fetchAll(PDO::FETCH_CLASS, LocationDAO::class);
@@ -134,7 +135,7 @@ class LocationDAO {
     }
 
     public static function getWithID( $locationID ) {
-        $statement = Database::connect()->prepare( LocationDAO::getSelectString() . " WHERE l.LocationID = :locationID" );
+        $statement = Database::connect()->prepare( LocationDAO::getSelectString( true ) . " WHERE l.LocationID = :locationID" );
         $statement->bindValue( ":locationID", $locationID);
         $statement->execute();
         $results = $statement->fetchAll(PDO::FETCH_CLASS, LocationDAO::class);
@@ -146,13 +147,27 @@ class LocationDAO {
         }
     }
 
-    public static function getSelectString() {
+    public static function getAllByLastVisit( $quadrant ) {
+        $statement = Database::connect()->prepare( LocationDAO::getSelectString( true ) . " WHERE l.Quadrant = :quadrant GROUP BY l.LocationID ORDER BY FrequencyLatest ASC" );
+        $statement->bindValue( ":quadrant", $quadrant);
+        $statement->execute();
+        $results = $statement->fetchAll(PDO::FETCH_CLASS, LocationDAO::class);
+        return $results;
+    }
+
+    public static function getSelectString( $includeFrequency ) {
         return "SELECT l.LocationID, l.Name, l.Description, l.Punchline, l.Abbreviation, " .
-            "l.Latitude, l.Longitude, l.MenuFileName, l.Frequency, l.HasVegan, l.HasVegetarian, l.HasGlutenFree, l.HasLactoseFree, l.HasTakeout, " .
+            "l.Latitude, l.Longitude, l.MenuFileName, l.HasVegan, l.HasVegetarian, l.HasGlutenFree, l.HasLactoseFree, l.HasTakeout, " .
             "l.DeathDate, l.FoodType, l.TravelTime, l.HasWifi, l.HasCashOnly, l.ParkingType, l.WaitTime, l.Quadrant, l.Cost, " .
-            "(SELECT COUNT(*) FROM Frequency f where f.LocationID = l.LocationID) as Frequency, " .
             "l.CategoryID, c.Name as CategoryName, " .
+            ( $includeFrequency ?
+            "MAX(f.dateVisited) as FrequencyLatest, " .
+            "COUNT(f.LocationID) as FrequencyCount, " : "" ) .
             "l.DistanceID, d.Name as DistanceName " .
-            "FROM Location l JOIN Distance d ON l.DistanceID = d.DistanceID JOIN Category c ON l.CategoryID = c.CategoryID";
+            "FROM Location l " .
+            "JOIN Distance d ON l.DistanceID = d.DistanceID " .
+            "JOIN Category c ON l.CategoryID = c.CategoryID " .
+            ( $includeFrequency ?
+            "LEFT JOIN Frequency f ON l.LocationID = f.LocationID" : "" );
     }
 }

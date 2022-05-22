@@ -42,9 +42,18 @@
                     <li>Collapse categories in list</li>
                     <li>Better filtering when multiple filters are selected</li>
                     <li>Create penguinore.com/yap alias</li>
-                    <li>Upgrade from Centos 6.9 to latest</li>
+                    <li>Clear the modal on each load of new location or category.</li>
+                    <li>Bold the frequency and color-code based on amount. Put in circle like the Price in sodastock.</li>
+                    <li>Put abbreviation next to latitude? Widen the modal?</li>
+                    <li>Hover-text of pins needs text without HTML escaping</li>
+                    <li>Unified search to search for name, parking, quadrant, etc</li>
                     <li>Upgrade from Centos 6.9 to latest (rebuild the entire server, get SodaStock on GIT first)</li>
                     <li>General notes (same as description?)</li>
+                    <li>Mark missing information in admin</li>
+                    <li>Direct URLs to places</li>
+                    <li>Sort the permanently closed by death date.</li>
+                    <li>Remove autocomplete from latitude and longitude, and others</li>
+                    <li>Travel and wait labels gone?</li>
                 </ul>
             </li>
 

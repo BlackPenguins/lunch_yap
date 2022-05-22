@@ -14,4 +14,24 @@ class FrequencyDAO {
         $statement->execute();
         return "Success";
     }
+
+    public static function formattedForUI( $frequencyCount, $frequencyLatest ) {
+        $frequencyFormatted = "No Visits";
+
+        if( $frequencyCount > 0 ) {
+            $today = new DateTime();
+            $latestDay = DateTime::createFromFormat('Y-m-d', $frequencyLatest);
+            $dateDifference = $today->diff( $latestDay );
+            $daysAgo = $dateDifference->format('%a');
+
+            $daysAgoFormatted = "TODAY";
+
+            if( $daysAgo > 0 ) {
+                $daysAgoFormatted = $daysAgo . " days ago";
+            }
+
+            $frequencyFormatted = "Last Visit: $daysAgoFormatted ($frequencyCount total)";
+        }
+        return $frequencyFormatted;
+    }
 }

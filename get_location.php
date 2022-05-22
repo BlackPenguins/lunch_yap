@@ -19,6 +19,8 @@
             $deathDateFormatted = $date->format("m/d/Y");
         }
 
+        $frequencyFormatted = FrequencyDAO::formattedForUI( $location->FrequencyCount, $location->FrequencyLatest);
+
         echo json_encode(array(
             'name' => $location->Name,
             'description' => $location->Description,
@@ -43,7 +45,7 @@
             'waitTime' => $location->WaitTime,
             'quadrant' => $location->Quadrant,
             'cost' => $location->Cost,
-            'frequency' => $location->Frequency,
+            'frequency' => $frequencyFormatted,
         ));
     }
 ?>

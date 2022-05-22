@@ -172,7 +172,7 @@ function setLocationData( locationID ) {
         var costString = new Array( parseInt(data.cost) + 1).join( '$' );
         $("#details-cost").html( costString );
 
-        $("#details-frequency").html( data.frequency + "x" );
+        $("#details-frequency").html( data.frequency );
 
         $("#details-food-type").html( data.foodType );
         $("#details-menu").html( data.menuFileName );

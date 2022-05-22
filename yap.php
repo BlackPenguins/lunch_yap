@@ -205,12 +205,14 @@ MARKER;
                                 <span id='details-parking'></span>
                             </div>
                         </div>
+                        <div id='details-frequency-container'>
+                            <span id='details-frequency' class='details-frequency'></span>
+                        </div>
                         <div id='details-death-date-container'>
                             Date of Death:
 <!--                            <img src='images/category_icons/grave.png'/>-->
                             <span id='details-death-date' class='details-death-date'></span>
                         </div>
-                        <span id='details-frequency' class='details-frequency'></span>
                     </div>
                     <div class="details-column col-4">
                         <div class='details-review-container'>

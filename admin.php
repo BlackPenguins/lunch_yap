@@ -50,6 +50,15 @@
     }
     $distanceDropdown .= "</select>";
 
+    $quadrantDropdown = "<select id= 'location_quadrant' name='location_quadrant'>" .
+        "<option value='Henrietta'>Henrietta</option>" .
+        "<option value='Downtown'>Downtown</option>" .
+        "<option value='College Town'>College Town</option>" .
+        "<option value='Monroe Ave'>Monroe Ave</option>" .
+        "<option value='South Wedge'>South Wedge</option>" .
+        "<option value='Kitchen'>Kitchen</option>" .
+        "</select>";
+
 ?>
 
 <!-- Category Modal -->
@@ -164,7 +173,7 @@
 
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">Quadrant</span>
-                        <input type="text" id="location_quadrant" name="location_quadrant" class="form-control" aria-describedby="basic-addon1">
+                        <?php echo $quadrantDropdown ?>
                     </div>
 
                     <div class="row">
@@ -350,7 +359,6 @@
         drawTextCell( $locationID, "location_latitude", $locationRow->Latitude );
         drawTextCell( $locationID, "location_longitude", $locationRow->Longitude );
         drawTextCell( $locationID, "location_menu", $locationRow->MenuFileName );
-        drawTextCell( $locationID, "location_frequency", $locationRow->Frequency );
         drawBoolCell( $locationID, "location_has_vegan", $locationRow->HasVegan );
         drawBoolCell( $locationID, "location_has_vegetarian", $locationRow->HasVegetarian );
         drawBoolCell( $locationID, "location_has_gluten_free", $locationRow->HasGlutenFree );
