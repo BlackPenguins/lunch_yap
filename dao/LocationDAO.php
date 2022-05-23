@@ -148,7 +148,7 @@ class LocationDAO {
     }
 
     public static function getAllByLastVisit( $quadrant ) {
-        $statement = Database::connect()->prepare( LocationDAO::getSelectString( true ) . " WHERE l.Quadrant = :quadrant GROUP BY l.LocationID ORDER BY FrequencyLatest ASC" );
+        $statement = Database::connect()->prepare( LocationDAO::getSelectString( true ) . " WHERE l.Quadrant = :quadrant GROUP BY l.LocationID ORDER BY FrequencyLatest ASC, l.Name ASC" );
         $statement->bindValue( ":quadrant", $quadrant);
         $statement->execute();
         $results = $statement->fetchAll(PDO::FETCH_CLASS, LocationDAO::class);

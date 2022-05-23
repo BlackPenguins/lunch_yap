@@ -51,6 +51,7 @@
     $distanceDropdown .= "</select>";
 
     $quadrantDropdown = "<select id= 'location_quadrant' name='location_quadrant'>" .
+        "<option value=''></option>" .
         "<option value='Henrietta'>Henrietta</option>" .
         "<option value='Downtown'>Downtown</option>" .
         "<option value='College Town'>College Town</option>" .
