@@ -332,8 +332,7 @@
     echo "<th>Abbreviation</th>";
     echo "<th>Latitude</th>";
     echo "<th>Longitude</th>";
-    echo "<th>Menu</th>";
-    echo "<th>Frequency</th>";
+    echo "<th>Quadrant</th>";
     echo "<th>Vegan</th>";
     echo "<th>Vegetarian</th>";
     echo "<th>Gluten-Free</th>";
@@ -358,7 +357,7 @@
         drawTextCell( $locationID, "location_abbreviation", $locationRow->Abbreviation );
         drawTextCell( $locationID, "location_latitude", $locationRow->Latitude );
         drawTextCell( $locationID, "location_longitude", $locationRow->Longitude );
-        drawTextCell( $locationID, "location_menu", $locationRow->MenuFileName );
+        drawTextCell( $locationID, "location_quadrant", $locationRow->Quadrant );
         drawBoolCell( $locationID, "location_has_vegan", $locationRow->HasVegan );
         drawBoolCell( $locationID, "location_has_vegetarian", $locationRow->HasVegetarian );
         drawBoolCell( $locationID, "location_has_gluten_free", $locationRow->HasGlutenFree );

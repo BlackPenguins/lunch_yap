@@ -19,8 +19,13 @@ client.on("messageCreate", async (message) => {
       break;
     case "lunch menu":
       message.channel.send("Here's your latest visits!"); //Replies to user command
-      const lunchResult = await getLunch();
-      message.channel.send( lunchResult ); //send the image URL
+      const lunchResults = await getLunch();
+
+      let lunchSpotsMessage = "";
+      for( const lunchResult  of lunchResults ) {
+        lunchSpotsMessage = lunchSpotsMessage + `**${lunchResult['name']}** - ${lunchResult['latest']}\n`;
+      }
+      message.channel.send( lunchSpotsMessage ); //send the image URL
       break;
 
   }
