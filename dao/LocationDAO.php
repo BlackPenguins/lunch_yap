@@ -147,6 +147,19 @@ class LocationDAO {
         }
     }
 
+    public static function getWithName( $locationName ) {
+        $statement = Database::connect()->prepare( LocationDAO::getSelectString( false ) . " WHERE l.Name = :locationName" );
+        $statement->bindValue( ":locationName", $locationName);
+        $statement->execute();
+        $results = $statement->fetchAll(PDO::FETCH_CLASS, LocationDAO::class);
+
+        if( count( $results ) > 0 ) {
+            return $results[0];
+        } else {
+            return null;
+        }
+    }
+
     public static function getAllByLastVisit( $quadrant ) {
         $statement = Database::connect()->prepare( LocationDAO::getSelectString( true ) . " WHERE l.Quadrant = :quadrant GROUP BY l.LocationID ORDER BY FrequencyLatest ASC, l.Name ASC" );
         $statement->bindValue( ":quadrant", $quadrant);

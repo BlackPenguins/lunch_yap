@@ -37,11 +37,31 @@ client.on("messageCreate", async (message) => {
             }
             message.channel.send(lunchSpotsMessage);
         }
+    } else if (message.content.startsWith("!visit ")) {
+        if( message.author.username != "Gamerkd" ) {
+            message.channel.send( "You are not Matt Miles!" );
+        } else {
+            let location = message.content.replace("!visit ", "").trim();
+
+            let visitResponse = await visitLocation(location);
+            console.log("Location", visitResponse );
+
+            if( visitResponse == undefined ) {
+                visitResponse = "Response was empty from Penguinore. Look into this.";
+            }
+
+            message.channel.send(visitResponse);
+        }
     }
 });
 
 async function getLunch( location ) {
-    const result = await axios.get( "https://penguinore.net/lunch_yap/api.php?search=last_visit&quadrant=" + location );
+    const result = await axios.get( "https://penguinore.net/lunch_yap/api.php?mode=search_last_visit&quadrant=" + location );
+    return result.data;
+}
+
+async function visitLocation( location ) {
+    const result = axios.get( "https://penguinore.net/lunch_yap/api.php?mode=add_frequency&location=" + location );
     return result.data;
 }
 

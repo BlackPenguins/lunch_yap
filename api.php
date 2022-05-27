@@ -3,11 +3,16 @@
     include_once "dao/LocationDAO.php";
     include_once "dao/FrequencyDAO.php";
 
-    $quadrant = $_GET['quadrant'];
-    $searchType = $_GET['search'];
 
-    if( $searchType == "last_visit" ) {
+    $mode = null;
+
+    if( isset( $_GET['mode'] ) ) {
+        $mode = $_GET['mode'];
+    }
+
+    if( $mode == "search_last_visit" ) {
         $lunchSpots = array();
+        $quadrant = $_GET['quadrant'];
 
         foreach (LocationDAO::getAllByLastVisit( $quadrant ) as $locationRow ) {
             $lunchDetails = array();
@@ -28,5 +33,23 @@
         }
 
         echo json_encode( $lunchSpots );
+    } else if( $mode == "add_frequency" ) {
+        if( isset( $_GET['location'] ) ) {
+            $locationName = $_GET['location'];
+            $locationRow = LocationDAO::getWithName($locationName);
+
+            if ($locationRow == null) {
+                echo "Could not find a name with **$locationName** for a location name.";
+            } else {
+                $locationID = $locationRow->LocationID;
+                $locationName = $locationRow->Name;
+                FrequencyDAO::insert($locationID);
+                echo "A visit today has been added for **$locationName**.";
+            }
+        } else {
+            echo "You must provide a location!";
+        }
+    } else {
+        echo "The API does not support this mode.";
     }
 ?>
