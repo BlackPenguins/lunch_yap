@@ -20,17 +20,17 @@ client.on("messageCreate", async (message) => {
     }
 
     if (message.content.startsWith("lunch in")) {
-        let location = message.content.replace( "lunch in", "" ).trim();
-        if( location == "henny" ) { location = "Henrietta"; }
+        let quadrant = message.content.replace( "lunch in", "" ).trim();
+        if( quadrant == "henny" ) { quadrant = "Henrietta"; }
 
-        const lunchResponse = await getLunch( location );
+        const lunchResponse = await getVisits( quadrant );
 
         if( lunchResponse.length == 0 ) {
-            message.channel.send( "There are no locations in the **" + location + "** quadrant." );
+            message.channel.send( "There are no locations in the **" + quadrant + "** quadrant." );
         } else {
             let lunchSpotsMessage = "";
 
-            message.channel.send("Here's your latest visits in " + location + "!");
+            message.channel.send("Here's your latest visits in " + quadrant + "!");
 
             for (const lunchResult of lunchResponse) {
                 lunchSpotsMessage = lunchSpotsMessage + `**${lunchResult['name']}** - ${lunchResult['latest']}\n`;
@@ -43,7 +43,7 @@ client.on("messageCreate", async (message) => {
         } else {
             let location = message.content.replace("!visit ", "").trim();
 
-            let visitResponse = await visitLocation(location).message;
+            let visitResponse = await visitLocation(location);
             console.log("Location", visitResponse );
 
             if( visitResponse == undefined ) {
@@ -55,14 +55,14 @@ client.on("messageCreate", async (message) => {
     }
 });
 
-async function getLunch( location ) {
-    const result = await axios.get( "https://penguinore.net/lunch_yap/api.php?mode=search_last_visit&quadrant=" + location );
+async function getVisits( quadrant ) {
+    const result = await axios.get( "https://penguinore.net/lunch_yap/api.php?mode=search_last_visit&quadrant=" + quadrant );
     return result.data;
 }
 
 async function visitLocation( location ) {
-    const result = axios.get( "https://penguinore.net/lunch_yap/api.php?mode=add_frequency&location=" + location );
-    return result.data;
+    const result = await axios.get( "https://penguinore.net/lunch_yap/api.php?mode=add_frequency&location=" + location );
+    return result.data.message;
 }
 
 //make sure this line is the last line
