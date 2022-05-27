@@ -23,16 +23,16 @@ client.on("messageCreate", async (message) => {
         let location = message.content.replace( "lunch in", "" ).trim();
         if( location == "henny" ) { location = "Henrietta"; }
 
-        const lunchResults = await getLunch( location );
+        const lunchResponse = await getLunch( location );
 
-        if( lunchResults.length == 0 ) {
+        if( lunchResponse.length == 0 ) {
             message.channel.send( "There are no locations in the **" + location + "** quadrant." );
         } else {
             let lunchSpotsMessage = "";
 
             message.channel.send("Here's your latest visits in " + location + "!");
 
-            for (const lunchResult of lunchResults) {
+            for (const lunchResult of lunchResponse) {
                 lunchSpotsMessage = lunchSpotsMessage + `**${lunchResult['name']}** - ${lunchResult['latest']}\n`;
             }
             message.channel.send(lunchSpotsMessage);
@@ -43,7 +43,7 @@ client.on("messageCreate", async (message) => {
         } else {
             let location = message.content.replace("!visit ", "").trim();
 
-            let visitResponse = await visitLocation(location);
+            let visitResponse = await visitLocation(location).message;
             console.log("Location", visitResponse );
 
             if( visitResponse == undefined ) {

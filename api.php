@@ -34,21 +34,24 @@
 
         echo json_encode( $lunchSpots );
     } else if( $mode == "add_frequency" ) {
+        $response = "";
+
         if( isset( $_GET['location'] ) ) {
             $locationName = $_GET['location'];
             $locationRow = LocationDAO::getWithName($locationName);
 
             if ($locationRow == null) {
-                echo "Could not find a name with **$locationName** for a location name.";
+                $response = "Could not find a name with **$locationName** for a location name.";
             } else {
                 $locationID = $locationRow->LocationID;
                 $locationName = $locationRow->Name;
                 FrequencyDAO::insert($locationID);
-                echo "A visit today has been added for **$locationName**.";
+                $response = "A visit today has been added for **$locationName**.";
             }
         } else {
-            echo "You must provide a location!";
+            $response = "You must provide a location!";
         }
+        echo  json_encode( [ 'message' => $response ] );
     } else {
         echo "The API does not support this mode.";
     }
