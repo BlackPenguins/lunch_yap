@@ -23,14 +23,17 @@ class FrequencyDAO {
             $latestDay = DateTime::createFromFormat('Y-m-d', $frequencyLatest);
             $dateDifference = $today->diff( $latestDay );
             $daysAgo = $dateDifference->format('%a');
+            $monthsAgo = $dateDifference->format('%m');
 
-            $daysAgoFormatted = "TODAY";
+            $frequencyFormatted = "TODAY";
 
-            if( $daysAgo > 0 ) {
-                $daysAgoFormatted = $daysAgo . " days ago";
+             if( $monthsAgo >= 3 ) {
+                $frequencyFormatted = $monthsAgo . " months ago";
+            } else if( $daysAgo > 30 ) {
+                $frequencyFormatted = floor( $daysAgo/ 7 ) . " weeks ago";
+            } else if( $daysAgo > 0 ) {
+                $frequencyFormatted = $daysAgo . " days ago";
             }
-
-            $frequencyFormatted = "Last Visit: $daysAgoFormatted ($frequencyCount total)";
         }
         return $frequencyFormatted;
     }

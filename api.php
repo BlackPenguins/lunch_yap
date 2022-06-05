@@ -10,25 +10,25 @@
         $mode = $_GET['mode'];
     }
 
-    if( $mode == "search_last_visit" ) {
+    if( $mode == "search_visits" ) {
         $lunchSpots = array();
         $quadrant = $_GET['quadrant'];
 
         foreach (LocationDAO::getAllByLastVisit( $quadrant ) as $locationRow ) {
             $lunchDetails = array();
             $name = $locationRow->Name;
-            $locationID = $locationRow->LocationID;
-            $punchline = $locationRow->Punchline;
-            $distance = $locationRow->DistanceName;
-            $abbreviation = $locationRow->Abbreviation;
-            $latitude = $locationRow->Latitude;
-            $longitude = $locationRow->Longitude;
-            $deathDate = $locationRow->DeathDate;
+            $daysAgoFormatted = FrequencyDAO::formattedForUI( $locationRow->FrequencyCount, $locationRow->FrequencyLatest);
 
-            $frequencyFormatted = FrequencyDAO::formattedForUI( $locationRow->FrequencyCount, $locationRow->FrequencyLatest);
+            $latestDateFormatted = null;
+            if( $locationRow->FrequencyCount >  0 ) {
+                $latestDate = DateTime::createFromFormat('Y-m-d', $locationRow->FrequencyLatest);
+                $latestDateFormatted = $latestDate->format( "m/d/Y");
+            }
 
             $lunchDetails['name'] = $name;
-            $lunchDetails['latest'] = $frequencyFormatted;
+            $lunchDetails['visit_count'] = $locationRow->FrequencyCount;
+            $lunchDetails['latest_visit_date'] = $latestDateFormatted;
+            $lunchDetails['time_ago_label'] = $daysAgoFormatted;
             $lunchSpots[] = $lunchDetails;
         }
 
