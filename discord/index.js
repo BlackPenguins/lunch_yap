@@ -11,37 +11,65 @@ client.on('ready', () => {
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return false;
 
-    console.log(`Message from ${message.author.username}: ${message.content}`);
+    const incomingMessage = message.content;
 
-    switch (message.content) {
+    console.log(`Message from ${message.author.username}: ${incomingMessage}`);
+
+    switch ( incomingMessage ) {
         case "ping":
             message.reply("Pong Bitch!");
             break;
     }
 
-    if (message.content.startsWith("lunch in")) {
-        let quadrant = message.content.replace( "lunch in", "" ).trim();
-        if( quadrant == "henny" ) { quadrant = "Henrietta"; }
+    if ( incomingMessage.startsWith("lunch in") ||
+        incomingMessage.startsWith("!visits") ||
+        incomingMessage.startsWith("!history") ||
+        incomingMessage.startsWith("!plan") ) {
+        let quadrant = incomingMessage
+            .replace( "lunch in", "" )
+            .replace( "!visits", "" )
+            .replace( "!history", "" )
+            .replace( "!plan", "" )
+            .trim();
+        if( quadrant.toLowerCase() == "henny" ) { quadrant = "Henrietta"; }
 
-        const lunchResponse = await getVisits( quadrant );
-
-        if( lunchResponse.length == 0 ) {
-            message.channel.send( "There are no locations in the **" + quadrant + "** quadrant." );
+        if( quadrant == "" ) {
+            message.channel.send( "You need to specify a quadrant." );
         } else {
-            let lunchSpotsMessage = "";
+            const lunchResponse = await getVisits(quadrant);
 
-            message.channel.send("Here's your latest visits in " + quadrant + "!");
+            if (lunchResponse.length == 0) {
+                message.channel.send("There are no locations in the **" + quadrant + "** quadrant.");
+            } else {
+                let lunchSpotsMessage = "";
 
-            for (const lunchResult of lunchResponse) {
-                lunchSpotsMessage = lunchSpotsMessage + `**${lunchResult['name']}** - ${lunchResult['latest']}\n`;
+                const isLunchPlan = incomingMessage.startsWith("!plan");
+
+                if( isLunchPlan ) {
+                    message.channel.send("Here's your lunch plan for " + quadrant + "!");
+                } else {
+                    message.channel.send("Here's your latest visits in " + quadrant + "!");
+                }
+
+                const showVisits = incomingMessage.startsWith("lunch in") || incomingMessage.startsWith("!visits") || incomingMessage.startsWith("!history");
+                const showNonVisits = incomingMessage.startsWith("lunch in") || incomingMessage.startsWith("!visits") || incomingMessage.startsWith("!plan");
+
+                for (const lunchResult of lunchResponse) {
+                    if (lunchResult['visit_count'] > 0 && showVisits) {
+                        lunchSpotsMessage = lunchSpotsMessage + `**${lunchResult['name']}** - Last Visit: ${lunchResult['time_ago_label']} (${lunchResult['visit_count']} total)\n`;
+                    } else if ( lunchResult['visit_count'] == 0 && showNonVisits) {
+                        const visitsLabel = isLunchPlan ? "" : " - NO VISITS";
+                        lunchSpotsMessage = lunchSpotsMessage + `**${lunchResult['name']}** ${visitsLabel}\n`;
+                    }
+                }
+                message.channel.send(lunchSpotsMessage);
             }
-            message.channel.send(lunchSpotsMessage);
         }
-    } else if (message.content.startsWith("!visit ")) {
+    } else if (incomingMessage.startsWith("!visited ")) {
         if( message.author.username != "Gamerkd" ) {
             message.channel.send( "You are not Matt Miles!" );
         } else {
-            let location = message.content.replace("!visit ", "").trim();
+            let location = incomingMessage.replace("!visit ", "").trim();
 
             let visitResponse = await visitLocation(location);
             console.log("Location", visitResponse );
@@ -52,11 +80,20 @@ client.on("messageCreate", async (message) => {
 
             message.channel.send(visitResponse);
         }
+    } else if ( incomingMessage == "!help" ) {
+        message.channel.send( "Yap is a lunch tracking tool that we use to determine where to go to lunch and which places we have not visited yet. YapBot will retrieve information from https://penguinore.net/lunch_yap/yap.php. It is meant to be a complete rip-off of Yelp but tailored more to us with less clutter and much less exploitation of small businesses.\n\n" +
+            "**YapBot Commands:**\n" +
+            "**lunch in [quadrant]** or **!visits [quadrant]** - Display visits and non-visits for a quadrant.\n" +
+            "**!history [quadrant]** - Display visited locations for a quadrant.\n" +
+            "**!plan [quadrant]** - Display locations that have not be visited for a quadrant.\n" +
+            "**!visited [location]** - Mark this location as visited today. (ADMIN ONLY)\n" +
+            "**!help** - This command list." );
     }
+
 });
 
 async function getVisits( quadrant ) {
-    const result = await axios.get( "https://penguinore.net/lunch_yap/api.php?mode=search_last_visit&quadrant=" + quadrant );
+    const result = await axios.get( "https://penguinore.net/lunch_yap/api.php?mode=search_visits&quadrant=" + quadrant );
     return result.data;
 }
 
