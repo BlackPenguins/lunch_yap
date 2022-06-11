@@ -21,7 +21,7 @@ client.on("messageCreate", async (message) => {
             break;
     }
 
-    if ( incomingMessage.startsWith("lunch in") ||
+    if ( incomingMessage.startsWith("lunch plan") ||
         incomingMessage.startsWith("!visits") ||
         incomingMessage.startsWith("!history") ||
         incomingMessage.startsWith("!plan") ) {
@@ -38,8 +38,8 @@ client.on("messageCreate", async (message) => {
 
             let lunchLocationsCount = 0;
 
-            const showVisits = incomingMessage.startsWith("lunch in") || incomingMessage.startsWith("!visits") || incomingMessage.startsWith("!history");
-            const showNonVisits = incomingMessage.startsWith("lunch in") || incomingMessage.startsWith("!visits") || incomingMessage.startsWith("!plan");
+            const showVisits = incomingMessage.startsWith("lunch plan") || incomingMessage.startsWith("!visits") || incomingMessage.startsWith("!history");
+            const showNonVisits = incomingMessage.startsWith("lunch plan") || incomingMessage.startsWith("!visits") || incomingMessage.startsWith("!plan");
 
             for (const lunchResult of lunchResponse) {
                 if (lunchResult['visit_count'] > 0 && showVisits) {
@@ -89,7 +89,7 @@ client.on("messageCreate", async (message) => {
     } else if ( incomingMessage == "!help" ) {
         message.channel.send( "Yap is a lunch tracking tool that we use to determine where to go to lunch and which places we have not visited yet. YapBot will retrieve information from https://penguinore.net/lunch_yap/yap.php. It is meant to be a complete rip-off of Yelp but tailored more to us with less clutter and much less exploitation of small businesses.\n\n" +
             "**YapBot Commands:**\n" +
-            "**lunch plan** or **!visits** - Display visits and non-visits.\n" +
+            "**!visits** or **lunch plan** - Display visits and non-visits.\n" +
             "**!history** - Display visited locations.\n" +
             "**!plan** - Display locations that have not been visited.\n" +
             "**!visited** - Mark this location as visited today. (ADMIN ONLY)\n" +

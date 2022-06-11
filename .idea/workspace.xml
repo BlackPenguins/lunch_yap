@@ -88,8 +88,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/discord/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="97" column="27" selection-start-line="97" selection-start-column="27" selection-end-line="97" selection-end-column="27" />
+            <state relative-caret-position="425">
+              <caret line="91" column="43" selection-start-line="91" selection-start-column="43" selection-end-line="91" selection-end-column="43" />
             </state>
           </provider>
         </entry>
@@ -374,12 +374,12 @@
       <workItem from="1654008684796" duration="607000" />
       <workItem from="1654459052914" duration="5281000" />
       <workItem from="1654634090399" duration="4421000" />
-      <workItem from="1654973427400" duration="3164000" />
+      <workItem from="1654973427400" duration="3314000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="175773000" />
+    <option name="totallyTimeSpent" value="175923000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -696,8 +696,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/discord/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="97" column="27" selection-start-line="97" selection-start-column="27" selection-end-line="97" selection-end-column="27" />
+        <state relative-caret-position="425">
+          <caret line="91" column="43" selection-start-line="91" selection-start-column="43" selection-end-line="91" selection-end-column="43" />
         </state>
       </provider>
     </entry>
