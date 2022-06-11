@@ -33,4 +33,17 @@ class CategoryDAO {
         $results = $statement->fetchAll(PDO::FETCH_CLASS, CategoryDAO::class);
         return $results;
     }
+
+    public static function findByName( $name ) {
+        $statement = Database::connect()->prepare( "SELECT c.CategoryID, c.Name, c.Position, c.IconFileName FROM Category c WHERE c.Name = :name" );
+        $statement->bindValue( ":name", $name );
+        $statement->execute();
+        $results = $statement->fetchAll(PDO::FETCH_CLASS, CategoryDAO::class);
+
+        if( count( $results ) > 0 ) {
+            return $results[0];
+        } else {
+            return null;
+        }
+    }
 }

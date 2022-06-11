@@ -40,6 +40,7 @@
             'foodType' => $location->FoodType,
             'travelTime' => $location->TravelTime,
             'hasWifi' => $location->HasWifi,
+            'isPlan' => $location->IsPlan,
             'hasCashOnly' => $location->HasCashOnly,
             'parkingType' => $location->ParkingType,
             'waitTime' => $location->WaitTime,

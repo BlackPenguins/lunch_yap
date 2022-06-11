@@ -28,6 +28,7 @@ class LocationDAO {
     public $FoodType;
     public $TravelTime;
     public $HasWifi;
+    public $IsPlan;
     public $HasCashOnly;
     public $ParkingType;
     public $WaitTime;
@@ -35,14 +36,14 @@ class LocationDAO {
 
 
     public static function create($name, $categoryID, $description, $punchline, $abbreviation, $distanceID, $cost, $latitude, $longitude, $menu, $hasVegan, $hasVegetarian, $hasGlutenFree, $hasLactoseFree, $hasTakeout,
-                                    $deathDate, $foodType, $travelTime, $hasWifi, $hasCashOnly, $parkingType, $waitTime, $quadrant) {
+                                    $deathDate, $foodType, $travelTime, $hasWifi, $hasCashOnly, $parkingType, $waitTime, $quadrant, $isPlan) {
         $deathDate = $deathDate == "" ? null : $deathDate;
 
         try {
             $statement = Database::connect()->prepare( "INSERT IGNORE Location SET Name = :name, CategoryID = :categoryID, Description = :description, Punchline = :punchline, " .
                 "Abbreviation = :abbreviation, DistanceID = :distanceID, Latitude = :latitude, Longitude = :longitude, MenuFileName = :menu, HasVegan = :hasVegan, HasVegetarian = :hasVegetarian, " .
                 "HasGlutenFree = :hasGlutenFree, HasLactoseFree = :hasLactoseFree, HasTakeout = :hasTakeout, DeathDate = :deathDate, FoodType = :foodType, TravelTime = :travelTime," .
-                "HasWifi = :hasWifi, HasCashOnly = :hasCashOnly, ParkingType = :parkingType, WaitTime = :waitTime, Quadrant = :quadrant, Cost = :cost" );
+                "HasWifi = :hasWifi, HasCashOnly = :hasCashOnly, ParkingType = :parkingType, WaitTime = :waitTime, Quadrant = :quadrant, Cost = :cost, IsPlan = :isPlan" );
             $statement->bindValue( ":name", $name );
             $statement->bindValue( ":categoryID", $categoryID );
             $statement->bindValue( ":description", $description );
@@ -61,6 +62,7 @@ class LocationDAO {
             $statement->bindValue( ":foodType", $foodType);
             $statement->bindValue( ":travelTime", $travelTime);
             $statement->bindValue( ":hasWifi", $hasWifi, PDO::PARAM_BOOL );
+            $statement->bindValue( ":isPlan", $isPlan, PDO::PARAM_BOOL );
             $statement->bindValue( ":hasCashOnly", $hasCashOnly, PDO::PARAM_BOOL );
             $statement->bindValue( ":parkingType", $parkingType);
             $statement->bindValue( ":waitTime", $waitTime);
@@ -75,7 +77,7 @@ class LocationDAO {
     }
 
     public static function update($locationID, $name, $categoryID, $description, $punchline, $abbreviation, $distanceID, $cost, $latitude, $longitude, $menuFileName, $hasVegan, $hasVegetarian, $hasGlutenFree, $hasLactoseFree, $hasTakeout,
-                                $deathDate, $foodType, $travelTime, $hasWifi, $hasCashOnly, $parkingType, $waitTime, $quadrant) {
+                                $deathDate, $foodType, $travelTime, $hasWifi, $hasCashOnly, $parkingType, $waitTime, $quadrant, $isPlan) {
         $isUpdateMenu = $menuFileName != "";
         $deathDate = $deathDate == "" ? null : $deathDate;
 
@@ -83,7 +85,7 @@ class LocationDAO {
             $statement = Database::connect()->prepare("UPDATE Location SET Name = :name, CategoryID = :categoryID, Description = :description, Punchline = :punchline, " .
                 "Abbreviation = :abbreviation, DistanceID = :distanceID, Latitude = :latitude, Longitude = :longitude, " . ( $isUpdateMenu ? "MenuFileName = :menuFileName," : "" ) . "HasVegan = :hasVegan, HasVegetarian = :hasVegetarian, " .
             "HasGlutenFree = :hasGlutenFree, HasLactoseFree = :hasLactoseFree, HasTakeout = :hasTakeout, DeathDate = :deathDate, FoodType = :foodType, TravelTime = :travelTime," .
-                "HasWifi = :hasWifi, HasCashOnly = :hasCashOnly, ParkingType = :parkingType, WaitTime = :waitTime, Quadrant = :quadrant, Cost = :cost WHERE LocationID = :locationID");
+                "HasWifi = :hasWifi, HasCashOnly = :hasCashOnly, ParkingType = :parkingType, WaitTime = :waitTime, Quadrant = :quadrant, Cost = :cost, IsPlan = :isPlan WHERE LocationID = :locationID");
             $statement->bindValue( ":name", $name);
             $statement->bindValue( ":categoryID", $categoryID);
             $statement->bindValue( ":description", $description);
@@ -100,6 +102,7 @@ class LocationDAO {
             $statement->bindValue( ":hasGlutenFree", $hasGlutenFree, PDO::PARAM_BOOL  );
             $statement->bindValue( ":hasLactoseFree", $hasLactoseFree, PDO::PARAM_BOOL  );
             $statement->bindValue( ":hasTakeout", $hasTakeout, PDO::PARAM_BOOL  );
+            $statement->bindValue( ":isPlan", $isPlan, PDO::PARAM_BOOL  );
             $statement->bindValue( ":locationID", $locationID);
 
             $statement->bindValue( ":deathDate", $deathDate );
@@ -160,9 +163,9 @@ class LocationDAO {
         }
     }
 
-    public static function getAllByLastVisit( $quadrant ) {
-        $statement = Database::connect()->prepare( LocationDAO::getSelectString( true ) . " WHERE l.Quadrant = :quadrant GROUP BY l.LocationID ORDER BY FrequencyLatest ASC, l.Name ASC" );
-        $statement->bindValue( ":quadrant", $quadrant);
+    public static function getAllByLastVisit() {
+        $statement = Database::connect()->prepare( LocationDAO::getSelectString( true ) . " WHERE l.IsPlan = :isPlan GROUP BY l.LocationID ORDER BY FrequencyLatest ASC, l.Name ASC" );
+        $statement->bindValue( ":isPlan", true);
         $statement->execute();
         $results = $statement->fetchAll(PDO::FETCH_CLASS, LocationDAO::class);
         return $results;
@@ -171,7 +174,7 @@ class LocationDAO {
     public static function getSelectString( $includeFrequency ) {
         return "SELECT l.LocationID, l.Name, l.Description, l.Punchline, l.Abbreviation, " .
             "l.Latitude, l.Longitude, l.MenuFileName, l.HasVegan, l.HasVegetarian, l.HasGlutenFree, l.HasLactoseFree, l.HasTakeout, " .
-            "l.DeathDate, l.FoodType, l.TravelTime, l.HasWifi, l.HasCashOnly, l.ParkingType, l.WaitTime, l.Quadrant, l.Cost, " .
+            "l.DeathDate, l.FoodType, l.TravelTime, l.HasWifi, l.HasCashOnly, l.ParkingType, l.WaitTime, l.Quadrant, l.Cost, l.IsPlan, " .
             "l.CategoryID, c.Name as CategoryName, " .
             ( $includeFrequency ?
             "MAX(f.dateVisited) as FrequencyLatest, " .

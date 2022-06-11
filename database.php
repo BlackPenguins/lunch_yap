@@ -166,6 +166,9 @@ EOSQL;
         Database::connect()->exec( "UPDATE Category SET IconFileName = 'grave.png' WHERE Name = 'Permanently Closed'");
 
     }
+     public static function __insert1_0() {
+         Database::connect()->exec("ALTER TABLE Location ADD COLUMN IsPlan BOOLEAN");
+     }
     public static function __insertSampleData() {
         return; // Safety
 

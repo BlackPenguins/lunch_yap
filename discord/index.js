@@ -47,6 +47,8 @@ client.on("messageCreate", async (message) => {
 
                 if( isLunchPlan ) {
                     message.channel.send("Here's your lunch plan for " + quadrant + "!");
+                    // count them, use bullets
+                    // allow other people to add, default henny
                 } else {
                     message.channel.send("Here's your latest visits in " + quadrant + "!");
                 }
@@ -69,7 +71,7 @@ client.on("messageCreate", async (message) => {
         if( message.author.username != "Gamerkd" ) {
             message.channel.send( "You are not Matt Miles!" );
         } else {
-            let location = incomingMessage.replace("!visit ", "").trim();
+            let location = incomingMessage.replace("!visited ", "").trim();
 
             let visitResponse = await visitLocation(location);
             console.log("Location", visitResponse );

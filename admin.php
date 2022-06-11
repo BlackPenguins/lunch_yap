@@ -26,6 +26,9 @@
             case 'insert_0.2':
                 Database::__insert0_2();
                 break;
+            case 'insert_1.0':
+                Database::__insert1_0();
+                break;
             default:
                 echo "<h3>Unknown action.</h3>";
         }
@@ -232,6 +235,11 @@
                         <label class="form-check-label" for="flexSwitchCheckChecked">Cash-Only</label>
                     </div>
 
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" id="location_is_plan" name="location_is_plan" type="checkbox" id="flexSwitchCheckChecked">
+                        <label class="form-check-label" for="flexSwitchCheckChecked">Is Lunch Plan</label>
+                    </div>
+
                     <input type="hidden" id="location_id" name="location_id">
                 </form>
             </div>
@@ -292,6 +300,7 @@
         $foodType = $_POST['location_food_type'];
         $travelTime = $_POST['location_travel_time'];
         $hasWifi = isset( $_POST['location_has_wifi'] );
+        $isPlan = isset( $_POST['location_is_plan'] );
         $hasCashOnly = isset( $_POST['location_has_cash_only'] );
         $parkingType = $_POST['location_parking_type'];
         $waitTime = $_POST['location_wait_time'];
@@ -304,11 +313,11 @@
 
         if( $locationID == "ADD" ) {
             LocationDAO::create($locationName, $categoryID, $description, $punchline, $abbreviation, $distanceID, $cost, $latitude, $longitude, $clientMenuName,
-                $hasVegan, $hasVegetarian, $hasGlutenFree, $hasLactoseFree, $hasTakeout, $deathDate, $foodType, $travelTime, $hasWifi, $hasCashOnly, $parkingType, $waitTime, $quadrant); // update these
+                $hasVegan, $hasVegetarian, $hasGlutenFree, $hasLactoseFree, $hasTakeout, $deathDate, $foodType, $travelTime, $hasWifi, $hasCashOnly, $parkingType, $waitTime, $quadrant, $isPlan); // update these
             echo "<h2>Location <b>$locationName</b> created.<h2>";
         } else {
             LocationDAO::update( $locationID, $locationName, $categoryID, $description, $punchline, $abbreviation, $distanceID, $cost, $latitude, $longitude, $clientMenuName,
-                $hasVegan, $hasVegetarian, $hasGlutenFree, $hasLactoseFree, $hasTakeout, $deathDate, $foodType, $travelTime, $hasWifi, $hasCashOnly, $parkingType, $waitTime, $quadrant );
+                $hasVegan, $hasVegetarian, $hasGlutenFree, $hasLactoseFree, $hasTakeout, $deathDate, $foodType, $travelTime, $hasWifi, $hasCashOnly, $parkingType, $waitTime, $quadrant, $isPlan );
             echo "<h2>Location <b>$locationName</b> updated.<h2>";
         }
 
@@ -341,6 +350,7 @@
     echo "<th>Takeout</th>";
     echo "<th>Wifi</th>";
     echo "<th>Cash-Only</th>";
+    echo "<th>Is Plan</th>";
     echo "<th>&nbsp</th>";
     echo "</tr>";
     echo "</thead>";
@@ -366,6 +376,7 @@
         drawBoolCell( $locationID, "location_has_takeout", $locationRow->HasTakeout );
         drawBoolCell( $locationID, "location_has_wifi", $locationRow->HasWifi );
         drawBoolCell( $locationID, "location_has_cash_only", $locationRow->HasCashOnly );
+        drawBoolCell( $locationID, "location_is_plan", $locationRow->IsPlan );
 
         $description = $locationRow->Description;
         $punchline = $locationRow->Punchline;
