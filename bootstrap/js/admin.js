@@ -62,6 +62,7 @@ $(document).on("click", ".edit_location", function () {
     $( '#modal_location #location_has_takeout' ).prop( 'checked', $('#location_has_takeout_' + locationID ).data( 'bool-value') == 1 );
     $( '#modal_location #location_has_wifi' ).prop( 'checked', $('#location_has_wifi_' + locationID ).data( 'bool-value') == 1 );
     $( '#modal_location #location_has_cash_only' ).prop( 'checked', $('#location_has_cash_only_' + locationID ).data( 'bool-value') == 1 );
+    $( '#modal_location #location_is_plan_only' ).prop( 'checked', $('#location_is_plan_' + locationID ).data( 'bool-value') == 1 );
     $( '#modal_location #location_death_date' ).val( deathDate );
     $( '#modal_location #location_food_type' ).val( foodType );
     $( '#modal_location #location_travel_time' ).val( travelTime );
