@@ -14,7 +14,7 @@ const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_M
 // After=network.target
 //
 // [Service]
-// Environment=CLIENT_TOKEN=OTc4MDQyNzAzMTA5NTgyODcw.GrawaR.7rcW1P6FtJtpZj5qf_yRLRr-S2Q_3sQr79qIbk
+// Environment=CLIENT_TOKEN=<TOKEN>
 // Type=simple
 // User=root
 // ExecStart=/usr/bin/node /var/www/html/lunch_yap/discord/index.js
