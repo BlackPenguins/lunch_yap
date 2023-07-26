@@ -1,4 +1,5 @@
 .idea*
-credentials.php
-.env
+src/.env
 discord/.env
+*.env
+*node_modules*
