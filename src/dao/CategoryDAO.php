@@ -28,14 +28,14 @@ class CategoryDAO {
     }
 
     public static function getAll() {
-        $statement = Database::connect()->prepare( "SELECT c.CategoryID, c.Name, c.Position, c.IconFileName FROM category c ORDER BY c.Position" );
+        $statement = Database::connect()->prepare( "SELECT c.CategoryID, c.Name, c.Position, c.IconFileName FROM Category c ORDER BY c.Position" );
         $statement->execute();
         $results = $statement->fetchAll(PDO::FETCH_CLASS, CategoryDAO::class);
         return $results;
     }
 
     public static function findByName( $name ) {
-        $statement = Database::connect()->prepare( "SELECT c.CategoryID, c.Name, c.Position, c.IconFileName FROM category c WHERE c.Name = :name" );
+        $statement = Database::connect()->prepare( "SELECT c.CategoryID, c.Name, c.Position, c.IconFileName FROM Category c WHERE c.Name = :name" );
         $statement->bindValue( ":name", $name );
         $statement->execute();
         $results = $statement->fetchAll(PDO::FETCH_CLASS, CategoryDAO::class);
