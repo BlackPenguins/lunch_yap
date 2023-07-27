@@ -11,6 +11,7 @@ services:
     depends_on:
       - php
       - mysql
+      - discord_bot
   php:
     build:
       context: ./dockerfiles
@@ -31,6 +32,7 @@ services:
     restart: always
     volumes:
       - ./discord_bot:/app
+      - /app/node_modules
   composer:
     build:
       context: ./dockerfiles
