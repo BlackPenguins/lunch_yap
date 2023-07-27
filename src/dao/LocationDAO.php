@@ -40,7 +40,7 @@ class LocationDAO {
         $deathDate = $deathDate == "" ? null : $deathDate;
 
         try {
-            $statement = Database::connect()->prepare( "INSERT IGNORE location SET Name = :name, CategoryID = :categoryID, Description = :description, Punchline = :punchline, " .
+            $statement = Database::connect()->prepare( "INSERT IGNORE Location SET Name = :name, CategoryID = :categoryID, Description = :description, Punchline = :punchline, " .
                 "Abbreviation = :abbreviation, DistanceID = :distanceID, Latitude = :latitude, Longitude = :longitude, MenuFileName = :menu, HasVegan = :hasVegan, HasVegetarian = :hasVegetarian, " .
                 "HasGlutenFree = :hasGlutenFree, HasLactoseFree = :hasLactoseFree, HasTakeout = :hasTakeout, DeathDate = :deathDate, FoodType = :foodType, TravelTime = :travelTime," .
                 "HasWifi = :hasWifi, HasCashOnly = :hasCashOnly, ParkingType = :parkingType, WaitTime = :waitTime, Quadrant = :quadrant, Cost = :cost, IsPlan = :isPlan" );
@@ -82,7 +82,7 @@ class LocationDAO {
         $deathDate = $deathDate == "" ? null : $deathDate;
 
         try {
-            $statement = Database::connect()->prepare("UPDATE location SET Name = :name, CategoryID = :categoryID, Description = :description, Punchline = :punchline, " .
+            $statement = Database::connect()->prepare("UPDATE Location SET Name = :name, CategoryID = :categoryID, Description = :description, Punchline = :punchline, " .
                 "Abbreviation = :abbreviation, DistanceID = :distanceID, Latitude = :latitude, Longitude = :longitude, " . ( $isUpdateMenu ? "MenuFileName = :menuFileName," : "" ) . "HasVegan = :hasVegan, HasVegetarian = :hasVegetarian, " .
             "HasGlutenFree = :hasGlutenFree, HasLactoseFree = :hasLactoseFree, HasTakeout = :hasTakeout, DeathDate = :deathDate, FoodType = :foodType, TravelTime = :travelTime," .
                 "HasWifi = :hasWifi, HasCashOnly = :hasCashOnly, ParkingType = :parkingType, WaitTime = :waitTime, Quadrant = :quadrant, Cost = :cost, IsPlan = :isPlan WHERE LocationID = :locationID");
@@ -180,7 +180,7 @@ class LocationDAO {
             "MAX(f.dateVisited) as FrequencyLatest, " .
             "COUNT(f.LocationID) as FrequencyCount, " : "" ) .
             "l.DistanceID, d.Name as DistanceName " .
-            "FROM location l " .
+            "FROM Location l " .
             "JOIN distance d ON l.DistanceID = d.DistanceID " .
             "JOIN category c ON l.CategoryID = c.CategoryID " .
             ( $includeFrequency ?
