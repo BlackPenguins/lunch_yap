@@ -24,7 +24,13 @@ services:
       - ./src/env/mysql.env
     volumes:
       - data:/var/lib/mysql
-      - ./mysql/lunch_yap.sql:/tmp/lunch_yap.sql
+  discord_bot:
+    build:
+      context: ./
+      dockerfile: ./dockerfiles/discord_bot.dockerfile
+    restart: always
+    volumes:
+      - ./discord_bot:/app
   composer:
     build:
       context: ./dockerfiles
