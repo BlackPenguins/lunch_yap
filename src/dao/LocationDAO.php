@@ -181,9 +181,9 @@ class LocationDAO {
             "COUNT(f.LocationID) as FrequencyCount, " : "" ) .
             "l.DistanceID, d.Name as DistanceName " .
             "FROM Location l " .
-            "JOIN distance d ON l.DistanceID = d.DistanceID " .
-            "JOIN category c ON l.CategoryID = c.CategoryID " .
+            "JOIN Distance d ON l.DistanceID = d.DistanceID " .
+            "JOIN Category c ON l.CategoryID = c.CategoryID " .
             ( $includeFrequency ?
-            "LEFT JOIN frequency f ON l.LocationID = f.LocationID" : "" );
+            "LEFT JOIN Frequency f ON l.LocationID = f.LocationID" : "" );
     }
 }
